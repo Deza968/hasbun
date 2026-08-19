@@ -11,7 +11,7 @@
 
 | Fase | Nombre | Issues | Estado | Rama Git |
 |---|---|---|---|---|
-| [FASE 00](tasks/FASE-00-fundacion.md) | Fundación y Arquitectura | 18 | ⬜ Pendiente | `feature/fase-00-fundacion` |
+| [FASE 00](tasks/FASE-00-fundacion.md) | Fundación y Arquitectura | 18 | ✅ Completado | `feature/fase-00-fundacion` |
 | [FASE 01](tasks/FASE-01-auth.md) | Auth, Usuarios y Permisos | 22 | ⬜ Pendiente | `feature/fase-01-auth` |
 | [FASE 02](tasks/FASE-02-catalogo.md) | Catálogo de Productos | 24 | ⬜ Pendiente | `feature/fase-02-catalogo` |
 | [FASE 03](tasks/FASE-03-inventario-compras.md) | Inventario y Compras | 20 | ⬜ Pendiente | `feature/fase-03-inventario` |

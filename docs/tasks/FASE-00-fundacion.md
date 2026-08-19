@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 17 | 18 | 94% |
+| 18 | 18 | 100% |
 
 ---
 
@@ -486,7 +486,7 @@ Script para poblar la base de datos con datos ficticios de desarrollo. **Nunca u
 #### #F00-17 — Verificación final de FASE 00
 - **Tipo:** `[INFRA]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** 🔄 En progreso
+- **Estado:** ✅ Completado
 - **Depende de:** Todos los anteriores
 
 **Checklist de salida de fase:**
@@ -497,11 +497,11 @@ Script para poblar la base de datos con datos ficticios de desarrollo. **Nunca u
 - [x] `ruff check apps/api/` → sin errores
 - [x] `mypy apps/api/app/` → sin errores críticos
 - [x] `npx tsc --noEmit` en `apps/web/` → sin errores
-- [ ] CI verde en GitHub Actions
+- [x] CI verde en GitHub Actions
 - [x] `alembic current` → sin errores
 - [x] Flower accesible en `http://localhost:5555`
 - [x] MinIO console accesible en `http://localhost:9001`
-- [ ] PR mergeado a `develop`
+- [x] PR mergeado a `develop`
 
 ---
 
