@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import asyncio
 
-import app.modules.auth.domain.models  # noqa: F401 - registrar modelos
 from app.database.base import Base
-from app.database.seeds import seed_roles, seed_users
+from app.database.seeds import seed_permissions, seed_roles, seed_users
 from app.database.session import AsyncSessionLocal, engine
+from app.modules.permissions.domain import models as permissions_models  # noqa: F401
+from app.modules.roles.domain import models as roles_models  # noqa: F401
+from app.modules.users.domain import models as users_models  # noqa: F401
 
 
 async def main() -> None:
@@ -15,6 +17,7 @@ async def main() -> None:
         await conn.run_sync(Base.metadata.create_all)
     async with AsyncSessionLocal() as db:
         print(await seed_roles(db))
+        print(await seed_permissions(db))
         print(await seed_users(db))
     await engine.dispose()
 

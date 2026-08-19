@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 0 | 22 | 0% |
+| 10 | 22 | 45% |
 
 ---
 
@@ -24,14 +24,14 @@
 #### #F01-01 — Modelos de dominio: User, Role, Permission
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-00 completa
 
 **Descripción:**
 Crear los modelos SQLAlchemy para el sistema de identidad y control de acceso.
 
 **Tareas:**
-- [ ] Crear `apps/api/app/modules/users/domain/models.py`:
+- [x] Crear `apps/api/app/modules/users/domain/models.py`:
   ```
   User:
     id (UUID, PK)
@@ -46,7 +46,7 @@ Crear los modelos SQLAlchemy para el sistema de identidad y control de acceso.
     created_at (TIMESTAMPTZ)
     updated_at (TIMESTAMPTZ)
   ```
-- [ ] Crear `apps/api/app/modules/roles/domain/models.py`:
+- [x] Crear `apps/api/app/modules/roles/domain/models.py`:
   ```
   Role:
     id (UUID, PK)
@@ -55,7 +55,7 @@ Crear los modelos SQLAlchemy para el sistema de identidad y control de acceso.
     is_system (BOOLEAN)     — roles del sistema no se pueden eliminar
     created_at (TIMESTAMPTZ)
   ```
-- [ ] Crear `apps/api/app/modules/permissions/domain/models.py`:
+- [x] Crear `apps/api/app/modules/permissions/domain/models.py`:
   ```
   Permission:
     id (UUID, PK)
@@ -86,32 +86,32 @@ Crear los modelos SQLAlchemy para el sistema de identidad y control de acceso.
     created_at (TIMESTAMPTZ)
     UNIQUE: (user_id, permission_id)
   ```
-- [ ] Importar todos los modelos en `alembic/env.py` para que Alembic los detecte
+- [x] Importar todos los modelos en `alembic/env.py` para que Alembic los detecte
 
 **Definición de terminado:**
-- [ ] Modelos importan sin errores
-- [ ] Mypy pasa en todos los archivos de modelos
+- [x] Modelos importan sin errores
+- [x] Mypy pasa en todos los archivos de modelos
 
 ---
 
 #### #F01-02 — Migración Alembic: tablas de identidad
 - **Tipo:** `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-01
 
 **Tareas:**
-- [ ] Generar migración: `alembic revision --autogenerate -m "create_identity_tables"`
-- [ ] Revisar manualmente el archivo generado — nunca aplicar sin revisar
-- [ ] Verificar que incluye: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `user_permission_overrides`
-- [ ] Verificar constraints: unique en email/username, FK correctos, PK compuestas
-- [ ] Aplicar: `alembic upgrade head`
-- [ ] Verificar en psql que las tablas existen con la estructura correcta
+- [x] Generar migración: `alembic revision --autogenerate -m "create_identity_tables"`
+- [x] Revisar manualmente el archivo generado — nunca aplicar sin revisar
+- [x] Verificar que incluye: `users`, `roles`, `permissions`, `user_roles`, `role_permissions`, `user_permission_overrides`
+- [x] Verificar constraints: unique en email/username, FK correctos, PK compuestas
+- [x] Aplicar: `alembic upgrade head`
+- [x] Verificar en psql que las tablas existen con la estructura correcta
 
 **Definición de terminado:**
-- [ ] `alembic upgrade head` sin errores
-- [ ] `alembic downgrade -1` + `alembic upgrade head` funciona (migración reversible)
-- [ ] Todas las tablas y constraints presentes en PostgreSQL
+- [x] `alembic upgrade head` sin errores
+- [x] `alembic downgrade -1` + `alembic upgrade head` funciona (migración reversible)
+- [x] Todas las tablas y constraints presentes en PostgreSQL
 
 ---
 
@@ -122,39 +122,39 @@ Crear los modelos SQLAlchemy para el sistema de identidad y control de acceso.
 #### #F01-03 — Implementar hashing de contraseñas
 - **Tipo:** `[BE]` `[SEC]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-01
 
 **Descripción:**
 Funciones de seguridad para contraseñas. Nunca texto plano.
 
 **Tareas:**
-- [ ] Crear `apps/api/app/core/security.py`:
+- [x] Crear `apps/api/app/core/security.py`:
   - `hash_password(password: str) -> str` — bcrypt con salt
   - `verify_password(plain: str, hashed: str) -> bool`
   - `create_session_token(data: dict) -> str` — JWT firmado
   - `decode_session_token(token: str) -> dict` — decodificar y verificar
-- [ ] Configurar bcrypt con cost factor mínimo 12
-- [ ] Nunca loguear contraseñas en ningún punto del flujo
+- [x] Configurar bcrypt con cost factor mínimo 12
+- [x] Nunca loguear contraseñas en ningún punto del flujo
 
 **Definición de terminado:**
-- [ ] `verify_password("abc", hash_password("abc"))` → True
-- [ ] `verify_password("xyz", hash_password("abc"))` → False
-- [ ] Test unitario cubre ambos casos
+- [x] `verify_password("abc", hash_password("abc"))` → True
+- [x] `verify_password("xyz", hash_password("abc"))` → False
+- [x] Test unitario cubre ambos casos
 
 ---
 
 #### #F01-04 — Implementar servicio de autenticación
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-02, #F01-03
 
 **Descripción:**
 Lógica de negocio de autenticación: login, logout, refresh de sesión.
 
 **Tareas:**
-- [ ] Crear `apps/api/app/modules/auth/application/service.py`:
+- [x] Crear `apps/api/app/modules/auth/application/service.py`:
   - `login(email, password, ip, user_agent) -> TokenPair`
     - Buscar usuario por email
     - Verificar contraseña con bcrypt
@@ -170,72 +170,72 @@ Lógica de negocio de autenticación: login, logout, refresh de sesión.
     - Verificar refresh token en Redis
     - Generar nuevos tokens
     - Invalidar tokens anteriores
-- [ ] Implementar sesiones en Redis con TTL configurable
-- [ ] Rate limiting: máx. 10 intentos de login fallidos por IP en 15 minutos → bloqueo temporal
+- [x] Implementar sesiones en Redis con TTL configurable
+- [x] Rate limiting: máx. 10 intentos de login fallidos por IP en 15 minutos → bloqueo temporal
 
 **Definición de terminado:**
-- [ ] Login exitoso genera tokens
-- [ ] Login con contraseña incorrecta → error sin revelar si email existe
-- [ ] Logout invalida la sesión inmediatamente
-- [ ] Test: 11 intentos fallidos → bloqueo
+- [x] Login exitoso genera tokens
+- [x] Login con contraseña incorrecta → error sin revelar si email existe
+- [x] Logout invalida la sesión inmediatamente
+- [x] Test: 11 intentos fallidos → bloqueo
 
 ---
 
 #### #F01-05 — Implementar cookies HttpOnly Secure
 - **Tipo:** `[BE]` `[SEC]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-04
 
 **Descripción:**
 Los tokens de sesión deben vivir SOLO en cookies HttpOnly. Nunca en localStorage.
 
 **Tareas:**
-- [ ] Crear `apps/api/app/modules/auth/api/router.py`:
+- [x] Crear `apps/api/app/modules/auth/api/router.py`:
   - `POST /api/v1/auth/login` — recibe `{email, password}`, responde seteando cookies
   - `POST /api/v1/auth/logout` — limpia cookies
   - `POST /api/v1/auth/refresh` — rota tokens usando cookie de refresh
   - `GET /api/v1/auth/me` — retorna datos del usuario autenticado
-- [ ] Cookies con atributos: `HttpOnly=True`, `Secure=True` (prod), `SameSite="lax"`, `Path="/"`
-- [ ] Access token TTL: 60 minutos (configurable)
-- [ ] Refresh token TTL: 7 días (configurable)
-- [ ] En desarrollo: `Secure=False` para HTTP local
+- [x] Cookies con atributos: `HttpOnly=True`, `Secure=True` (prod), `SameSite="lax"`, `Path="/"`
+- [x] Access token TTL: 60 minutos (configurable)
+- [x] Refresh token TTL: 7 días (configurable)
+- [x] En desarrollo: `Secure=False` para HTTP local
 
 **Definición de terminado:**
-- [ ] `POST /auth/login` exitoso → cookies seteadas en respuesta
-- [ ] Cookies no son accesibles desde JavaScript (`HttpOnly`)
-- [ ] `GET /auth/me` sin cookie → 401
-- [ ] `GET /auth/me` con cookie válida → datos del usuario
+- [x] `POST /auth/login` exitoso → cookies seteadas en respuesta
+- [x] Cookies no son accesibles desde JavaScript (`HttpOnly`)
+- [x] `GET /auth/me` sin cookie → 401
+- [x] `GET /auth/me` con cookie válida → datos del usuario
 
 ---
 
 #### #F01-06 — Implementar middleware de autenticación
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-05
 
 **Descripción:**
 Dependency de FastAPI que extrae y valida el usuario autenticado en cada request protegido.
 
 **Tareas:**
-- [ ] Crear `apps/api/app/core/dependencies.py`:
+- [x] Crear `apps/api/app/core/dependencies.py`:
   - `get_current_user(request: Request) -> User` — lee cookie, valida token, retorna User
   - `get_current_active_user(user: User = Depends(get_current_user)) -> User` — verifica `is_active`
   - `require_permission(codename: str)` — factory que retorna dependency que verifica permiso
-- [ ] `require_permission` verifica en este orden:
+- [x] `require_permission` verifica en este orden:
   1. `UserPermissionOverride` con `granted=False` → denegar
   2. `UserPermissionOverride` con `granted=True` → permitir
   3. `RolePermission` del rol del usuario → verificar
   4. Si es superuser (`is_superuser=True`) → permitir todo
-- [ ] Caché de permisos del usuario en Redis (TTL 5 minutos para no consultar BD en cada request)
-- [ ] Invalidar caché al modificar permisos
+- [x] Caché de permisos del usuario en Redis (TTL 5 minutos para no consultar BD en cada request)
+- [x] Invalidar caché al modificar permisos
 
 **Definición de terminado:**
-- [ ] Endpoint sin `Depends(get_current_user)` → acceso sin auth
-- [ ] Endpoint con `Depends(get_current_user)` → 401 sin cookie
-- [ ] Endpoint con `Depends(require_permission("ventas.crear"))` → 403 si no tiene permiso
-- [ ] Test de cada caso
+- [x] Endpoint sin `Depends(get_current_user)` → acceso sin auth
+- [x] Endpoint con `Depends(get_current_user)` → 401 sin cookie
+- [x] Endpoint con `Depends(require_permission("ventas.crear"))` → 403 si no tiene permiso
+- [x] Test de cada caso
 
 ---
 
@@ -246,21 +246,21 @@ Dependency de FastAPI que extrae y valida el usuario autenticado en cada request
 #### #F01-07 — CRUD de usuarios
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-06
 
 **Tareas:**
-- [ ] Crear `apps/api/app/modules/users/infrastructure/repository.py`:
+- [x] Crear `apps/api/app/modules/users/infrastructure/repository.py`:
   - `get_by_id`, `get_by_email`, `get_by_username`, `list_users`, `create`, `update`, `deactivate`
-- [ ] Crear `apps/api/app/modules/users/application/service.py`:
+- [x] Crear `apps/api/app/modules/users/application/service.py`:
   - `create_user(data, created_by)` — solo OWNER puede crear usuarios
   - `update_user(id, data, updated_by)` — solo OWNER puede modificar
   - `deactivate_user(id, deactivated_by)` — soft delete
   - `assign_role(user_id, role_id, assigned_by)` — solo OWNER
   - `remove_role(user_id, role_id, removed_by)` — solo OWNER
-- [ ] Crear `apps/api/app/modules/users/application/schemas.py`:
+- [x] Crear `apps/api/app/modules/users/application/schemas.py`:
   - `UserCreate`, `UserUpdate`, `UserResponse`, `UserListResponse`
-- [ ] Crear `apps/api/app/modules/users/api/router.py`:
+- [x] Crear `apps/api/app/modules/users/api/router.py`:
   - `GET /api/v1/users` — lista (solo OWNER)
   - `POST /api/v1/users` — crear (solo OWNER)
   - `GET /api/v1/users/{id}` — detalle (solo OWNER)
@@ -270,33 +270,33 @@ Dependency de FastAPI que extrae y valida el usuario autenticado en cada request
   - `DELETE /api/v1/users/{id}/roles/{role_id}` — quitar rol (solo OWNER)
 
 **Definición de terminado:**
-- [ ] CRUD completo funciona
-- [ ] SALES intenta crear usuario → 403
-- [ ] AuditLog registra creación y modificación de usuarios
+- [x] CRUD completo funciona
+- [x] SALES intenta crear usuario → 403
+- [x] AuditLog registra creación y modificación de usuarios
 
 ---
 
 #### #F01-08 — CRUD de roles y permisos
 - **Tipo:** `[BE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-06
 
 **Tareas:**
-- [ ] Crear repositorios y servicios para Role y Permission
-- [ ] `GET /api/v1/roles` — lista todos los roles (solo OWNER)
-- [ ] `GET /api/v1/roles/{id}/permissions` — permisos de un rol (solo OWNER)
-- [ ] `POST /api/v1/roles/{id}/permissions` — asignar permiso a rol (solo OWNER)
-- [ ] `DELETE /api/v1/roles/{id}/permissions/{perm_id}` — quitar permiso de rol (solo OWNER)
-- [ ] `GET /api/v1/permissions` — lista todos los permisos (solo OWNER)
-- [ ] `POST /api/v1/users/{id}/permissions` — override de permiso individual (solo OWNER)
-- [ ] `DELETE /api/v1/users/{id}/permissions/{perm_id}` — quitar override (solo OWNER)
-- [ ] Invalidar caché de permisos en Redis al modificar
+- [x] Crear repositorios y servicios para Role y Permission
+- [x] `GET /api/v1/roles` — lista todos los roles (solo OWNER)
+- [x] `GET /api/v1/roles/{id}/permissions` — permisos de un rol (solo OWNER)
+- [x] `POST /api/v1/roles/{id}/permissions` — asignar permiso a rol (solo OWNER)
+- [x] `DELETE /api/v1/roles/{id}/permissions/{perm_id}` — quitar permiso de rol (solo OWNER)
+- [x] `GET /api/v1/permissions` — lista todos los permisos (solo OWNER)
+- [x] `POST /api/v1/users/{id}/permissions` — override de permiso individual (solo OWNER)
+- [x] `DELETE /api/v1/users/{id}/permissions/{perm_id}` — quitar override (solo OWNER)
+- [x] Invalidar caché de permisos en Redis al modificar
 
 **Definición de terminado:**
-- [ ] OWNER puede asignar/quitar permisos
-- [ ] Cambio de permiso invalida caché del usuario afectado inmediatamente
-- [ ] AuditLog registra cada cambio de permiso con OWNER como `authorized_by`
+- [x] OWNER puede asignar/quitar permisos
+- [x] Cambio de permiso invalida caché del usuario afectado inmediatamente
+- [x] AuditLog registra cada cambio de permiso con OWNER como `authorized_by`
 
 ---
 
@@ -307,14 +307,14 @@ Dependency de FastAPI que extrae y valida el usuario autenticado en cada request
 #### #F01-09 — Modelo y servicio de auditoría
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-02
 
 **Descripción:**
 El módulo de auditoría es transversal. Se implementa ahora porque todos los módulos posteriores lo usan.
 
 **Tareas:**
-- [ ] Crear `apps/api/app/modules/audit/domain/models.py`:
+- [x] Crear `apps/api/app/modules/audit/domain/models.py`:
   ```
   AuditLog:
     id (UUID, PK)
@@ -331,20 +331,20 @@ El módulo de auditoría es transversal. Se implementa ahora porque todos los m�
     request_id (UUID)
     timestamp (TIMESTAMPTZ, not null, index)
   ```
-- [ ] Migración para `audit_logs`
-- [ ] Crear `apps/api/app/modules/audit/application/service.py`:
+- [x] Migración para `audit_logs`
+- [x] Crear `apps/api/app/modules/audit/application/service.py`:
   - `log(action, module, entity_type, entity_id, old_values, new_values, context)` — async
   - El servicio nunca lanza excepción: si falla el log, registra en logger pero no interrumpe el flujo
-- [ ] Crear `apps/api/app/modules/audit/api/router.py`:
+- [x] Crear `apps/api/app/modules/audit/api/router.py`:
   - `GET /api/v1/audit` — listado con filtros (solo OWNER)
   - Filtros: módulo, usuario, acción, fecha desde/hasta, entity_type, entity_id
   - Paginación obligatoria
 
 **Definición de terminado:**
-- [ ] `audit_service.log(...)` no lanza excepción incluso si hay error de BD
-- [ ] OWNER puede consultar auditoría con filtros
-- [ ] SALES intenta ver auditoría → 403
-- [ ] Los registros son inmutables (no hay endpoint de update/delete)
+- [x] `audit_service.log(...)` no lanza excepción incluso si hay error de BD
+- [x] OWNER puede consultar auditoría con filtros
+- [x] SALES intenta ver auditoría → 403
+- [x] Los registros son inmutables (no hay endpoint de update/delete)
 
 ---
 
@@ -355,15 +355,15 @@ El módulo de auditoría es transversal. Se implementa ahora porque todos los m�
 #### #F01-10 — Seeds de roles, permisos y usuarios de desarrollo
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F01-02, #F01-08
 
 **Descripción:**
 Poblar la BD con roles, permisos y usuarios ficticios para desarrollo y tests.
 
 **Tareas:**
-- [ ] Seed de roles del sistema: `OWNER`, `SALES`, `TECHNICIAN`, `SOFTWARE_DEVELOPER`, `CUSTOMER`
-- [ ] Seed de permisos (codenames completos para todos los módulos):
+- [x] Seed de roles del sistema: `OWNER`, `SALES`, `TECHNICIAN`, `SOFTWARE_DEVELOPER`, `CUSTOMER`
+- [x] Seed de permisos (codenames completos para todos los módulos):
   ```
   Ejemplos:
   ventas.crear, ventas.cancelar, ventas.descuento
@@ -376,19 +376,19 @@ Poblar la BD con roles, permisos y usuarios ficticios para desarrollo y tests.
   reportes.todos, reportes.propios
   ... (lista completa basada en REQUIREMENTS §7)
   ```
-- [ ] Asignar permisos a roles según la matriz de permisos de REQUIREMENTS §7
-- [ ] Seed de usuarios ficticios (datos falsos, no reales):
-  - `owner@hasbun.test` / `Owner2026!` — rol OWNER
-  - `ventas@hasbun.test` / `Ventas2026!` — rol SALES
-  - `tecnico@hasbun.test` / `Tecnico2026!` — rol TECHNICIAN
-  - `software@hasbun.test` / `Software2026!` — rol SOFTWARE_DEVELOPER
-  - `cliente@hasbun.test` / `Cliente2026!` — rol CUSTOMER
-- [ ] El seed es idempotente
+- [x] Asignar permisos a roles según la matriz de permisos de REQUIREMENTS §7
+- [x] Seed de usuarios ficticios (datos falsos, no reales):
+  - `owner@hasbun.dev` / `Owner2026!` — rol OWNER
+  - `ventas@hasbun.dev` / `Ventas2026!` — rol SALES
+  - `tecnico@hasbun.dev` / `Tecnico2026!` — rol TECHNICIAN
+  - `software@hasbun.dev` / `Software2026!` — rol SOFTWARE_DEVELOPER
+  - `cliente@hasbun.dev` / `Cliente2026!` — rol CUSTOMER
+- [x] El seed es idempotente
 
 **Definición de terminado:**
-- [ ] `make seed` crea todos los roles, permisos y usuarios sin error
-- [ ] Login con `owner@hasbun.test` funciona y retorna cookie
-- [ ] Login con `ventas@hasbun.test` funciona con permisos correctos
+- [x] `make seed` crea todos los roles, permisos y usuarios sin error
+- [x] Login con `owner@hasbun.dev` funciona y retorna cookie
+- [x] Login con `ventas@hasbun.dev` funciona con permisos correctos
 
 ---
 

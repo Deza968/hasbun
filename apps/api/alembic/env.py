@@ -16,9 +16,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.core.config import settings
 from app.database.base import Base
 
-# Importar todos los modelos para que Alembic los detecte (se completará en fases)
-from app.modules.auth.domain import models  # noqa: F401
-# from app.modules.users.domain import models  # noqa: F401
+# Importar todos los modelos para que Alembic los detecte
+import app.modules.users.domain.models  # noqa: F401
+import app.modules.roles.domain.models  # noqa: F401
+import app.modules.permissions.domain.models  # noqa: F401
+import app.modules.audit.domain.models  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

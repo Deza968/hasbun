@@ -5,7 +5,7 @@ from __future__ import annotations
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.auth.domain.models import Role
+from app.modules.roles.domain.models import Role
 
 ROLES: list[dict[str, str | bool]] = [
     {
