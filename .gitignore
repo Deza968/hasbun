@@ -31,6 +31,10 @@ next-env.d.ts
 *.log
 logs/
 
+# Celery
+celerybeat-schedule*
+*.pid
+
 # Build / dist
 dist/
 build/
