@@ -660,8 +660,8 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 - [x] `pytest` 51/51 ✅, `ruff` ✅, `mypy` ✅ (2026-08-20)
 - [x] Migración Alembic ✅: creada migración FASE 00 ausente (`f00c0defa11` — tablas `roles` y `users`); verificado `upgrade head` + `downgrade base` + `alembic check` sin drift; corregido nombrado de constraints/índices únicos (sku, slug, serial) para coincidir con modelos
 - [x] Seeds ✅: registrados todos los modelos en `app/database/seeds/__init__.py` (evita error de mapper `FileObject` al ejecutar `make seed`)
-- [ ] CI verde (GitHub Actions) — pendiente de ejecutar en el repo
-- [ ] PR mergeado a `develop`
+- [x] CI verde (GitHub Actions): `build` ✅ y `lint-and-test` ✅ (2026-08-20, PR #2)
+- [x] PR mergeado a `develop` (#2, 2026-08-20)
 
 ---
 
