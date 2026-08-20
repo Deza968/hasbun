@@ -29,6 +29,8 @@ PERMISSIONS: list[tuple[str, str, str]] = [
     ("productos.publicar", "Publicar productos", "productos"),
     ("categorias.gestionar", "Gestionar categorías", "productos"),
     ("marcas.gestionar", "Gestionar marcas", "productos"),
+    ("archivos.subir", "Subir archivos", "archivos"),
+    ("archivos.eliminar", "Eliminar archivos", "archivos"),
     # Inventario y compras
     ("inventario.ver", "Ver inventario", "inventario"),
     ("inventario.ajustar", "Ajustar inventario", "inventario"),

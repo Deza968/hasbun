@@ -10,6 +10,7 @@ from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
+    from app.modules.files.domain.models import FileObject
     from app.modules.permissions.domain.models import UserPermissionOverride
     from app.modules.roles.domain.models import Role
 
@@ -45,5 +46,11 @@ class User(BaseModel, Base):
         back_populates="user",
         foreign_keys="UserPermissionOverride.user_id",
         cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+    files: Mapped[list[FileObject]] = relationship(
+        "FileObject",
+        back_populates="uploader",
+        foreign_keys="FileObject.uploaded_by",
         lazy="selectin",
     )

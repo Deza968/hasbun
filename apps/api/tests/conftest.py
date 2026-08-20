@@ -14,6 +14,7 @@ from collections.abc import AsyncGenerator
 import httpx
 import pytest_asyncio
 from fakeredis import aioredis as fake_aioredis
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -49,18 +50,27 @@ async def _fake_redis(monkeypatch) -> AsyncGenerator[None, None]:
 
 @pytest_asyncio.fixture(scope="session", loop_scope="session")
 async def db_setup() -> AsyncGenerator[None, None]:
-    """Crea el esquema y siembra los datos base una sola vez por sesión."""
+    """Crea el esquema una sola vez por sesión."""
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await test_engine.dispose()
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def _clean_and_seed(db_setup: None) -> AsyncGenerator[None, None]:
+    """Limpia todas las tablas y resiembra datos base en cada test (TRUNCATE = DML)."""
+    async with test_engine.begin() as conn:
+        tables = ", ".join(f'"{t.name}"' for t in reversed(Base.metadata.sorted_tables))
+        await conn.execute(text(f"TRUNCATE TABLE {tables} RESTART IDENTITY CASCADE"))
     async with TestSessionLocal() as session:
         await seed_roles(session)
         await seed_permissions(session)
         await seed_users(session)
     yield
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-    await test_engine.dispose()
 
 
 @pytest_asyncio.fixture

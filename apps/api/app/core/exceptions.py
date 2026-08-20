@@ -106,9 +106,12 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
-        details = {"errors": exc.errors()}
+        errors = []
+        for err in exc.errors():
+            clean = {k: v for k, v in err.items() if k != "ctx"}
+            errors.append(clean)
         return _error_response(
-            request, 422, "VALIDATION_ERROR", "Datos de entrada inválidos", details
+            request, 422, "VALIDATION_ERROR", "Datos de entrada inválidos", {"errors": errors}
         )
 
     @app.exception_handler(StarletteHTTPException)

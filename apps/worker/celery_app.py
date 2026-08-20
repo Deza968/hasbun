@@ -15,7 +15,7 @@ celery_app = Celery(
     "hasbun",
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
-    include=["worker.tasks.health"],
+    include=["worker.tasks.health", "worker.tasks.exchange_rates"],
 )
 
 celery_app.conf.update(
@@ -32,6 +32,10 @@ celery_app.conf.update(
         "health-ping-every-minute": {
             "task": "worker.tasks.health.ping",
             "schedule": crontab(minute="*/1"),
+        },
+        "update-exchange-rates-daily": {
+            "task": "worker.tasks.exchange_rates.update_exchange_rates",
+            "schedule": crontab(hour=9, minute=0),
         },
     },
 )
