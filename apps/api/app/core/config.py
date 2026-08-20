@@ -56,6 +56,33 @@ class Settings(BaseSettings):
     # Tipo de cambio
     EXCHANGE_RATE_PROVIDER: str = "mock"
     MOCK_EXCHANGE_RATE_USD_PEN: float = 3.75
+    EXCHANGE_RATE_UPDATE_HOUR: int = 9  # hora local (America/Lima) para la tarea diaria
+
+    # Archivos (FileObject / MinIO)
+    FILE_MAX_SIZE_BYTES: int = 10 * 1024 * 1024  # 10MB
+    FILE_ALLOWED_MIME_TYPES: Annotated[list[str], NoDecode] = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "application/pdf",
+    ]
+    FILE_SIGNED_URL_TTL_SECONDS: int = 3600  # 1 hora
+
+    # Generador de SKU: mapa de categoría (slug o prefijo) → prefijo
+    SKU_PREFIX_BY_CATEGORY_SLUG: Annotated[dict[str, str], NoDecode] = {
+        "laptops": "LAP",
+        "computadoras": "CPT",
+        "impresoras": "IMP",
+        "camaras": "CAM",
+        "accesorios": "ACC",
+        "electrodomesticos": "ELE",
+        "monitores": "MON",
+        "celulares": "CEL",
+        "tablets": "TAB",
+        "redes": "RED",
+        "almacenamiento": "ALM",
+    }
+    SKU_DEFAULT_PREFIX: str = "PRD"
 
     # Cifrado de credenciales de equipos (reparaciones)
     CREDENTIAL_ENCRYPTION_KEY: str = ""
@@ -69,6 +96,30 @@ class Settings(BaseSettings):
     def parse_allowed_origins(cls, v: object) -> object:
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
+
+    @field_validator("FILE_ALLOWED_MIME_TYPES", mode="before")
+    @classmethod
+    def parse_mime_types(cls, v: object) -> object:
+        if isinstance(v, str):
+            return [m.strip() for m in v.split(",") if m.strip()]
+        return v
+
+    @field_validator("SKU_PREFIX_BY_CATEGORY_SLUG", mode="before")
+    @classmethod
+    def parse_sku_prefix_map(cls, v: object) -> object:
+        """Acepta JSON (`{"laptops": "LAP"}`) o pares clave=valor separados por coma."""
+        if isinstance(v, str):
+            import json
+
+            try:
+                return json.loads(v)
+            except json.JSONDecodeError:
+                return dict(
+                    item.split("=", 1)
+                    for item in v.split(",")
+                    if "=" in item and item.strip()
+                )
         return v
 
     @property

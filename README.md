@@ -51,20 +51,20 @@ make lint             # ruff + mypy
 
 Proyecto en construcción por fases (ver `docs/TASKS.md`):
 
-- **FASE 00 — Fundación y Arquitectura**: en progreso
-- FASE 01 — Autenticación y RBAC
-- FASE 02 — Maestros
+- **FASE 00 — Fundación y Arquitectura**: ✅ completada
+- **FASE 01 — Autenticación y RBAC**: ✅ completada
+- **FASE 02 — Catálogo de Productos**: ✅ completada (backend verificado: 51/51 tests, ruff, mypy)
 - ... hasta FASE 13 — Producción / Hardening
 
 ## Credenciales de desarrollo (seeds)
 
 | Rol | Email | Contraseña |
 |---|---|---|
-| OWNER | owner@hasbun.local | Hasbun123! |
-| SALES | ventas@hasbun.local | Hasbun123! |
-| TECHNICIAN | tecnico@hasbun.local | Hasbun123! |
-| SOFTWARE_DEVELOPER | dev@hasbun.local | Hasbun123! |
-| CUSTOMER | cliente@hasbun.local | Hasbun123! |
+| OWNER | owner@hasbun.dev | Owner2026! |
+| SALES | ventas@hasbun.dev | Ventas2026! |
+| TECHNICIAN | tecnico@hasbun.dev | Tecnico2026! |
+| SOFTWARE_DEVELOPER | software@hasbun.dev | Software2026! |
+| CUSTOMER | cliente@hasbun.dev | Cliente2026! |
 
 > Solo para entornos de desarrollo/CI. Nunca usar en producción.
 
@@ -73,3 +73,5 @@ Proyecto en construcción por fases (ver `docs/TASKS.md`):
 - `docs/REQUIREMENTS.md` — especificación funcional completa
 - `docs/TASKS.md` — índice de fases
 - `docs/architecture.md` — decisiones de arquitectura
+- `docs/database.md` — esquema de base de datos (catálogo, atributos, archivos)
+- `docs/business-rules.md` — reglas de precios, ofertas y generador de SKU

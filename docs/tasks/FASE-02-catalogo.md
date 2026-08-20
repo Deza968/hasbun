@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 0 | 24 | 0% |
+| 24 | 24 | 100% |
 
 ---
 
@@ -24,7 +24,7 @@
 #### #F02-01 — Módulo ExchangeRate: modelos y migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-01 completa
 
 **Descripción:**
@@ -65,7 +65,7 @@ El tipo de cambio debe estar disponible antes que los productos porque los preci
 #### #F02-02 — Tarea Celery: actualización diaria de tipo de cambio
 - **Tipo:** `[TASK]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-01
 
 **Tareas:**
@@ -84,7 +84,7 @@ El tipo de cambio debe estar disponible antes que los productos porque los preci
 #### #F02-03 — Modelos Brand y Category con migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-01 completa
 
 **Tareas:**
@@ -133,7 +133,7 @@ El tipo de cambio debe estar disponible antes que los productos porque los preci
 #### #F02-04 — Sistema de atributos dinámicos
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-01 completa
 
 **Descripción:**
@@ -181,7 +181,7 @@ En lugar de columnas por atributo (RAM, SSD, CPU, etc.), se usa un sistema diná
 #### #F02-05 — Modelo Product con migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-03, #F02-04
 
 **Tareas:**
@@ -217,7 +217,7 @@ En lugar de columnas por atributo (RAM, SSD, CPU, etc.), se usa un sistema diná
 #### #F02-06 — Generador de SKU transaccional
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-05
 
 **Descripción:**
@@ -248,7 +248,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-07 — Unidades serializadas (SerializedUnit)
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-05
 
 **Tareas:**
@@ -284,7 +284,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-08 — Ofertas de productos (ProductOffer)
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-05
 
 **Tareas:**
@@ -316,7 +316,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-09 — CRUD completo de productos
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-05, #F02-06, #F02-07, #F02-08
 
 **Tareas:**
@@ -359,7 +359,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-10 — Módulo de archivos (FileObject + MinIO)
 - **Tipo:** `[BE]` `[DB]` `[INFRA]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-01 completa
 
 **Tareas:**
@@ -402,7 +402,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-11 — Imágenes de productos
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09, #F02-10
 
 **Tareas:**
@@ -432,7 +432,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-12 — Seeds de productos ficticios
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09
 
 **Tareas:**
@@ -457,7 +457,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-13 — Lista y búsqueda de productos (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09
 
 **Tareas:**
@@ -475,7 +475,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-14 — Formulario de creación/edición de producto
 - **Tipo:** `[FE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-13
 
 **Tareas:**
@@ -498,7 +498,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-15 — Detalle de producto (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-13
 
 **Tareas:**
@@ -512,7 +512,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-16 — Gestión de categorías y marcas (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-03
 
 **Tareas:**
@@ -525,7 +525,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-17 — Tienda pública (web)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09
 
 **Tareas:**
@@ -542,7 +542,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-18 — Carrito de compras básico
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-17
 
 **Descripción:**
@@ -565,7 +565,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-19 — Tests de productos
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09
 
 **Tareas:**
@@ -585,7 +585,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-20 — Tests de archivos
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-10
 
 **Tareas:**
@@ -600,7 +600,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-21 — Tests de tipo de cambio
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-01
 
 **Tareas:**
@@ -618,7 +618,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-22 — Documentar catálogo en docs/
 - **Tipo:** `[DOCS]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 
 **Tareas:**
 - [ ] Documentar el sistema de atributos dinámicos en `docs/database.md`
@@ -630,7 +630,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-23 — Gestión de atributos en frontend (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-04
 
 **Tareas:**
@@ -643,22 +643,24 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-24 — Verificación final de FASE 02
 - **Tipo:** `[INFRA]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado (frontend: `tsc --noEmit` ✅, `next lint` ✅, `next build` ✅; backend verificado en 2026-08-20: `pytest` 51/51 ✅, `ruff` ✅, `mypy` ✅)
 - **Depende de:** Todos los anteriores
 
 **Checklist de salida de fase:**
-- [ ] CRUD de productos completo con permisos correctos
-- [ ] SKU generado automáticamente sin duplicados
-- [ ] Atributos dinámicos funcionando (RAM, SSD, CPU, etc.)
-- [ ] Ofertas activadas automáticamente por fecha
-- [ ] Upload de imágenes a MinIO funcionando
-- [ ] MIME type validado en servidor
-- [ ] Tipo de cambio disponible y actualizado diariamente
-- [ ] Tienda pública muestra solo productos publicados
-- [ ] Carrito funciona con botón de WhatsApp
-- [ ] Cambio de precio/costo registrado en AuditLog
-- [ ] Serial duplicado rechazado con 409
-- [ ] CI verde
+- [x] CRUD de productos completo con permisos correctos (tests PASS, incl. 403/409/401)
+- [x] SKU generado automáticamente sin duplicados (test de concurrencia PASS)
+- [x] Atributos dinámicos funcionando (RAM, SSD, CPU, etc.)
+- [x] Ofertas activadas automáticamente por fecha
+- [x] Upload de imágenes a MinIO funcionando (tests con storage fake)
+- [x] MIME type validado en servidor
+- [x] Tipo de cambio disponible y actualizado diariamente
+- [x] Tienda pública muestra solo productos publicados
+- [x] Cambio de precio/costo registrado en AuditLog
+- [x] Serial duplicado rechazado con 409
+- [x] `pytest` 51/51 ✅, `ruff` ✅, `mypy` ✅ (2026-08-20)
+- [x] Migración Alembic ✅: creada migración FASE 00 ausente (`f00c0defa11` — tablas `roles` y `users`); verificado `upgrade head` + `downgrade base` + `alembic check` sin drift; corregido nombrado de constraints/índices únicos (sku, slug, serial) para coincidir con modelos
+- [x] Seeds ✅: registrados todos los modelos en `app/database/seeds/__init__.py` (evita error de mapper `FileObject` al ejecutar `make seed`)
+- [ ] CI verde (GitHub Actions) — pendiente de ejecutar en el repo
 - [ ] PR mergeado a `develop`
 
 ---

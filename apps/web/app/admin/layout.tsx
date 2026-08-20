@@ -5,6 +5,10 @@ import { Sidebar } from "@/components/sidebar";
 
 const items = [
   { href: "/admin", label: "Panel" },
+  { href: "/admin/productos", label: "Productos" },
+  { href: "/admin/categorias", label: "Categorías" },
+  { href: "/admin/marcas", label: "Marcas" },
+  { href: "/admin/atributos", label: "Atributos" },
   { href: "/admin/users", label: "Usuarios" },
   { href: "/profile", label: "Mi perfil" },
 ];
