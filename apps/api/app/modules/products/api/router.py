@@ -266,6 +266,35 @@ async def get_product_by_sku(
     return await _to_response(db, product)
 
 
+@router.get("/products/admin/{product_id}", response_model=ProductResponse)
+async def get_product_admin(
+    product_id: uuid.UUID,
+    db: DbSession,
+    _: ViewProducts,
+) -> ProductResponse:
+    """Detalle de un producto (admin, incluye publicados o no)."""
+    from app.core.exceptions import NotFoundError
+
+    product = await repository.get_by_id(db, product_id)
+    if product is None:
+        raise NotFoundError("Producto no encontrado")
+    return await _to_response(db, product)
+
+
+@router.get("/products/slug/{slug}", response_model=PublicProductResponse)
+async def get_product_by_slug(
+    slug: str,
+    db: DbSession,
+) -> PublicProductResponse:
+    """Detalle público de un producto por slug (tienda)."""
+    from app.core.exceptions import NotFoundError
+
+    product = await repository.get_by_slug(db, slug)
+    if product is None or not (product.published and product.active):
+        raise NotFoundError("Producto no encontrado")
+    return await _to_public_response(db, product)
+
+
 @router.get("/products/{product_id}", response_model=PublicProductResponse)
 async def get_product(
     product_id: uuid.UUID,

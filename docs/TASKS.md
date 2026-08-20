@@ -13,7 +13,7 @@
 |---|---|---|---|---|
 | [FASE 00](tasks/FASE-00-fundacion.md) | Fundación y Arquitectura | 18 | ✅ Completado | `feature/fase-00-fundacion` |
 | [FASE 01](tasks/FASE-01-auth.md) | Auth, Usuarios y Permisos | 22 | ✅ Completada | `develop` |
-| [FASE 02](tasks/FASE-02-catalogo.md) | Catálogo de Productos | 24 | 🔵 En progreso (16/24 backend) | `feature/fase-02-catalogo` |
+| [FASE 02](tasks/FASE-02-catalogo.md) | Catálogo de Productos | 24 | 🔵 En progreso (23/24, falta verificación final) | `feature/fase-02-catalogo` |
 | [FASE 03](tasks/FASE-03-inventario-compras.md) | Inventario y Compras | 20 | ⬜ Pendiente | `feature/fase-03-inventario` |
 | [FASE 04](tasks/FASE-04-caja-pos-ventas.md) | Caja, POS y Ventas | 32 | ⬜ Pendiente | `feature/fase-04-ventas` |
 | [FASE 05](tasks/FASE-05-creditos-cuotas-mora.md) | Créditos, Cuotas y Mora | 30 | ⬜ Pendiente | `feature/fase-05-creditos` |
@@ -89,5 +89,5 @@ hotfix/*    → corrección urgente sobre main
 
 ---
 
-*Última actualización: 2026-08-17*
+*Última actualización: 2026-08-20*
 *Referencia: [REQUIREMENTS.md](REQUIREMENTS.md)*

@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 16 | 24 | 67% |
+| 23 | 24 | 96% |
 
 ---
 
@@ -525,7 +525,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-17 — Tienda pública (web)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09
 
 **Tareas:**
@@ -542,7 +542,7 @@ El SKU se genera automáticamente. El generador debe ser transaccional para evit
 #### #F02-18 — Carrito de compras básico
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-17
 
 **Descripción:**
@@ -565,7 +565,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-19 — Tests de productos
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-09
 
 **Tareas:**
@@ -585,7 +585,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-20 — Tests de archivos
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-10
 
 **Tareas:**
@@ -600,7 +600,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-21 — Tests de tipo de cambio
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-01
 
 **Tareas:**
@@ -618,7 +618,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-22 — Documentar catálogo en docs/
 - **Tipo:** `[DOCS]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 
 **Tareas:**
 - [ ] Documentar el sistema de atributos dinámicos en `docs/database.md`
@@ -630,7 +630,7 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-23 — Gestión de atributos en frontend (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F02-04
 
 **Tareas:**
@@ -643,21 +643,21 @@ Carrito real con persistencia en SessionStorage para usuarios anónimos. Sin pag
 #### #F02-24 — Verificación final de FASE 02
 - **Tipo:** `[INFRA]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** 🔵 En progreso
 - **Depende de:** Todos los anteriores
 
 **Checklist de salida de fase:**
-- [ ] CRUD de productos completo con permisos correctos
-- [ ] SKU generado automáticamente sin duplicados
-- [ ] Atributos dinámicos funcionando (RAM, SSD, CPU, etc.)
-- [ ] Ofertas activadas automáticamente por fecha
-- [ ] Upload de imágenes a MinIO funcionando
-- [ ] MIME type validado en servidor
-- [ ] Tipo de cambio disponible y actualizado diariamente
-- [ ] Tienda pública muestra solo productos publicados
-- [ ] Carrito funciona con botón de WhatsApp
-- [ ] Cambio de precio/costo registrado en AuditLog
-- [ ] Serial duplicado rechazado con 409
+- [x] CRUD de productos completo con permisos correctos
+- [x] SKU generado automáticamente sin duplicados
+- [x] Atributos dinámicos funcionando (RAM, SSD, CPU, etc.)
+- [x] Ofertas activadas automáticamente por fecha
+- [x] Upload de imágenes a MinIO funcionando
+- [x] MIME type validado en servidor
+- [x] Tipo de cambio disponible y actualizado diariamente
+- [x] Tienda pública muestra solo productos publicados
+- [x] Carrito funciona con botón de WhatsApp
+- [x] Cambio de precio/costo registrado en AuditLog
+- [x] Serial duplicado rechazado con 409
 - [ ] CI verde
 - [ ] PR mergeado a `develop`
 

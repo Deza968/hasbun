@@ -51,9 +51,9 @@ make lint             # ruff + mypy
 
 Proyecto en construcción por fases (ver `docs/TASKS.md`):
 
-- **FASE 00 — Fundación y Arquitectura**: en progreso
-- FASE 01 — Autenticación y RBAC
-- FASE 02 — Maestros
+- **FASE 00 — Fundación y Arquitectura**: ✅ completada
+- **FASE 01 — Autenticación y RBAC**: ✅ completada
+- **FASE 02 — Catálogo de Productos**: en verificación final
 - ... hasta FASE 13 — Producción / Hardening
 
 ## Credenciales de desarrollo (seeds)
