@@ -5,10 +5,11 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from app.core.dependencies import DbSession, require_permission
+from app.core.dependencies import DbSession, get_current_active_user, require_permission
 from app.core.exceptions import NotFoundError
 from app.modules.users.application.schemas import (
     AssignRoleRequest,
+    MeUpdate,
     UserCreate,
     UserListResponse,
     UserResponse,
@@ -19,6 +20,7 @@ from app.modules.users.application.service import (
     create_user,
     deactivate_user,
     remove_role,
+    update_own_profile,
     update_user,
 )
 from app.modules.users.domain.models import User
@@ -72,6 +74,25 @@ async def create_user_endpoint(
 ) -> UserResponse:
     """Crea un usuario (solo OWNER)."""
     user = await create_user(db, data=body, created_by=actor)
+    return _to_response(user)
+
+
+@router.get("/users/me", response_model=UserResponse)
+async def get_own_profile(
+    user: Annotated[User, Depends(get_current_active_user)],
+) -> UserResponse:
+    """Retorna el perfil del usuario autenticado."""
+    return _to_response(user)
+
+
+@router.put("/users/me", response_model=UserResponse)
+async def update_own_profile_endpoint(
+    body: MeUpdate,
+    user: Annotated[User, Depends(get_current_active_user)],
+    db: DbSession,
+) -> UserResponse:
+    """Actualiza nombre y teléfono del propio perfil (no email ni rol)."""
+    user = await update_own_profile(db, user=user, data=body)
     return _to_response(user)
 
 

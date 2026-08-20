@@ -2,9 +2,19 @@
 
 from __future__ import annotations
 
+import re
 import uuid
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
+
+PASSWORD_PATTERN = r"^(?=.*[A-Z])(?=.*\d).{8,}$"  # noqa: S105
+PASSWORD_MESSAGE = "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número"  # noqa: S105
+
+
+def validate_password_strength(value: str) -> str:
+    if not re.match(PASSWORD_PATTERN, value):
+        raise ValueError(PASSWORD_MESSAGE)
+    return value
 
 
 class LoginRequest(BaseModel):
@@ -20,7 +30,9 @@ class TokenPair(BaseModel):
 
 class ChangePasswordRequest(BaseModel):
     current_password: str = Field(..., min_length=1)
-    new_password: str = Field(..., min_length=8)
+    new_password: str = Field(..., min_length=8, examples=["NuevaPass2026!"])
+
+    _validate_password = field_validator("new_password")(validate_password_strength)
 
 
 class UserMeResponse(BaseModel):

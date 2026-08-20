@@ -14,7 +14,7 @@ from app.core.dependencies import (
     get_current_user,
 )
 from app.core.exceptions import AuthenticationError
-from app.core.redis import revoke_session
+from app.core.redis import blocklist_access_token, revoke_session
 from app.core.security import decode_token, limiter
 from app.modules.auth.application.schemas import (
     ChangePasswordRequest,
@@ -178,4 +178,11 @@ async def change_password_endpoint(
         ip_address=request.client.host if request.client else None,
         request_id=_request_id(request),
     )
+    access_token = request.cookies.get(ACCESS_COOKIE)
+    if access_token:
+        try:
+            payload = decode_token(access_token, "access")
+            await blocklist_access_token(payload["jti"], ttl=ACCESS_TTL)
+        except ValueError:
+            pass
     return {"message": "Contraseña actualizada"}

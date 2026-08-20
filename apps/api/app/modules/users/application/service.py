@@ -93,6 +93,29 @@ async def update_user(
     return user
 
 
+async def update_own_profile(
+    db: AsyncSession, *, user: User, data
+) -> User:
+    """Actualiza el perfil propio (solo nombre y teléfono)."""
+    old = {"full_name": user.full_name, "phone": user.phone}
+    if data.full_name is not None:
+        user.full_name = data.full_name
+    if data.phone is not None:
+        user.phone = data.phone
+    await db.commit()
+    await db.refresh(user)
+    await log(
+        action="UPDATE_OWN_PROFILE",
+        module="users",
+        user_id=user.id,
+        entity_type="User",
+        entity_id=user.id,
+        old_values=old,
+        new_values={"full_name": user.full_name, "phone": user.phone},
+    )
+    return user
+
+
 async def deactivate_user(
     db: AsyncSession, *, user_id: uuid.UUID, deactivated_by: User
 ) -> User:

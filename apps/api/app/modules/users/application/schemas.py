@@ -5,7 +5,10 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from app.modules.auth.application.schemas import (
+    validate_password_strength,
+)
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class UserCreate(BaseModel):
@@ -16,11 +19,18 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=8)
     role_codes: list[str] = Field(default_factory=list)
 
+    _validate_password = field_validator("password")(validate_password_strength)
+
 
 class UserUpdate(BaseModel):
     full_name: str | None = Field(default=None, max_length=255)
     phone: str | None = Field(default=None, max_length=20)
     is_active: bool | None = None
+
+
+class MeUpdate(BaseModel):
+    full_name: str | None = Field(default=None, max_length=255)
+    phone: str | None = Field(default=None, max_length=20)
 
 
 class UserResponse(BaseModel):
