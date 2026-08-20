@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 21 | 22 | 95% |
+| 22 | 22 | 100% |
 
 ---
 
@@ -585,7 +585,7 @@ Poblar la BD con roles, permisos y usuarios ficticios para desarrollo y tests.
 #### #F01-22 — Verificación final de FASE 01
 - **Tipo:** `[INFRA]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ En progreso (falta merge)
+- **Estado:** ✅ Completado
 - **Depende de:** Todos los anteriores
 
 **Checklist de salida de fase:**
@@ -600,7 +600,7 @@ Poblar la BD con roles, permisos y usuarios ficticios para desarrollo y tests.
 - [x] Seeds funcionan y crean los 5 usuarios de desarrollo
 - [x] CI verde (lint + typecheck + todos los tests)
 - [x] Swagger UI documenta todos los endpoints de auth
-- [ ] PR mergeado a `develop`
+- [x] PR mergeado a `develop` — https://github.com/Deza968/hasbun/pull/1
 
 ---
 
