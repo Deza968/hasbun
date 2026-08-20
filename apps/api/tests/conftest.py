@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 
 os.environ.setdefault("ENVIRONMENT", "test")
+os.environ.setdefault("SECRET_KEY", "test-secret-key-not-for-production")
 os.environ.setdefault(
     "DATABASE_URL",
     "postgresql+asyncpg://hasbun:hasbun@localhost:5433/hasbun_test",
@@ -25,7 +26,7 @@ os.environ.setdefault(
 os.environ.setdefault("REDIS_URL", "redis://localhost:6380/15")
 
 from app.database.base import Base  # noqa: E402
-from app.database.seeds import seed_permissions, seed_roles, seed_users  # noqa: E402
+from app.database.seeds import seed_catalog, seed_permissions, seed_roles, seed_users  # noqa: E402
 from app.main import app  # noqa: E402
 
 test_engine = create_async_engine(
@@ -57,6 +58,7 @@ async def db_setup() -> AsyncGenerator[None, None]:
         await seed_roles(session)
         await seed_permissions(session)
         await seed_users(session)
+        await seed_catalog(session)
     yield
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

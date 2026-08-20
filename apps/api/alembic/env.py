@@ -21,6 +21,12 @@ import app.modules.users.domain.models  # noqa: F401
 import app.modules.roles.domain.models  # noqa: F401
 import app.modules.permissions.domain.models  # noqa: F401
 import app.modules.audit.domain.models  # noqa: F401
+import app.modules.exchange_rates.domain.models  # noqa: F401
+import app.modules.files.domain.models  # noqa: F401
+import app.modules.brands.domain.models  # noqa: F401
+import app.modules.categories.domain.models  # noqa: F401
+import app.modules.attributes.domain.models  # noqa: F401
+import app.modules.products.domain.models  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
