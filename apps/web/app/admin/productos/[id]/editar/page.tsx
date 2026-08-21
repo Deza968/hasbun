@@ -27,6 +27,7 @@ import {
 } from "@/lib/catalog-api";
 import { getErrorMessage, isForbidden } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { RequireSection } from "@/components/guards";
 
 interface AttrField {
   attribute: string;
@@ -178,6 +179,7 @@ export default function ProductoFormPage() {
   }
 
   return (
+    <RequireSection section="productos">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">
@@ -409,5 +411,6 @@ export default function ProductoFormPage() {
         </div>
       </div>
     </div>
+    </RequireSection>
   );
 }
