@@ -1,0 +1,75 @@
+"""F05 creditos cuotas mora reservas
+
+Revision ID: d5e6f7a8b9c0
+Revises: c2d3e4f5a6b7
+Create Date: 2026-08-21
+"""
+from alembic import op
+import sqlalchemy as sa
+
+revision = "d5e6f7a8b9c0"
+down_revision = "c2d3e4f5a6b7"
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    op.create_table("credit_authorizations", sa.Column("customer_id", sa.UUID(), nullable=False), sa.Column("type", sa.String(30), nullable=False), sa.Column("requested_by", sa.UUID(), nullable=False), sa.Column("approved_by", sa.UUID(), nullable=True), sa.Column("reason", sa.Text(), nullable=False), sa.Column("status", sa.String(20), nullable=False), sa.Column("requested_at", sa.DateTime(timezone=True), nullable=False), sa.Column("reviewed_at", sa.DateTime(timezone=True), nullable=True), sa.Column("id", sa.UUID(), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.ForeignKeyConstraint(["approved_by"], ["users.id"], name=op.f("fk_credit_authorizations_approved_by_users"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["customer_id"], ["customers.id"], name=op.f("fk_credit_authorizations_customer_id_customers"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["requested_by"], ["users.id"], name=op.f("fk_credit_authorizations_requested_by_users"), ondelete="RESTRICT"), sa.PrimaryKeyConstraint("id", name=op.f("pk_credit_authorizations")))
+    op.create_index(op.f("ix_credit_authorizations_customer_id"), "credit_authorizations", ["customer_id"], unique=False)
+    op.create_index(op.f("ix_credit_authorizations_status"), "credit_authorizations", ["status"], unique=False)
+    op.create_index(op.f("ix_credit_authorizations_type"), "credit_authorizations", ["type"], unique=False)
+    op.create_table("credit_agreements", sa.Column("code", sa.String(20), nullable=False), sa.Column("customer_id", sa.UUID(), nullable=False), sa.Column("sale_id", sa.UUID(), nullable=False), sa.Column("status", sa.String(20), nullable=False), sa.Column("total_amount", sa.Numeric(14,2), nullable=False), sa.Column("initial_payment", sa.Numeric(14,2), nullable=False), sa.Column("financed_amount", sa.Numeric(14,2), nullable=False), sa.Column("number_of_installments", sa.Integer(), nullable=False), sa.Column("installment_amount", sa.Numeric(14,2), nullable=False), sa.Column("interest_rate", sa.Numeric(5,4), nullable=False), sa.Column("interest_free_months", sa.Integer(), nullable=False), sa.Column("currency", sa.String(3), nullable=False), sa.Column("exchange_rate", sa.Numeric(10,4), nullable=False), sa.Column("exchange_rate_source", sa.String(50), nullable=True), sa.Column("exchange_rate_timestamp", sa.DateTime(timezone=True), nullable=True), sa.Column("first_due_date", sa.Date(), nullable=False), sa.Column("authorized_by", sa.UUID(), nullable=True), sa.Column("authorization_id", sa.UUID(), nullable=True), sa.Column("created_by", sa.UUID(), nullable=True), sa.Column("id", sa.UUID(), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.CheckConstraint("financed_amount = total_amount - initial_payment", name=op.f("ck_credit_agreements_financed_matches_total")), sa.CheckConstraint("initial_payment >= 0", name=op.f("ck_credit_agreements_initial_non_negative")), sa.CheckConstraint("installment_amount > 0", name=op.f("ck_credit_agreements_installment_positive")), sa.CheckConstraint("number_of_installments > 0", name=op.f("ck_credit_agreements_installments_count_positive")), sa.ForeignKeyConstraint(["authorization_id"], ["credit_authorizations.id"], name=op.f("fk_credit_agreements_authorization_id_credit_authorizations"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["authorized_by"], ["users.id"], name=op.f("fk_credit_agreements_authorized_by_users"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["created_by"], ["users.id"], name=op.f("fk_credit_agreements_created_by_users"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["customer_id"], ["customers.id"], name=op.f("fk_credit_agreements_customer_id_customers"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["sale_id"], ["sales.id"], name=op.f("fk_credit_agreements_sale_id_sales"), ondelete="RESTRICT"), sa.PrimaryKeyConstraint("id", name=op.f("pk_credit_agreements")))
+    op.create_index(op.f("ix_credit_agreements_code"), "credit_agreements", ["code"], unique=True)
+    op.create_index(op.f("ix_credit_agreements_customer_id"), "credit_agreements", ["customer_id"], unique=False)
+    op.create_index(op.f("ix_credit_agreements_sale_id"), "credit_agreements", ["sale_id"], unique=False)
+    op.create_index(op.f("ix_credit_agreements_status"), "credit_agreements", ["status"], unique=False)
+    op.create_table("credit_installments", sa.Column("agreement_id", sa.UUID(), nullable=False), sa.Column("number", sa.Integer(), nullable=False), sa.Column("amount", sa.Numeric(14,2), nullable=False), sa.Column("due_date", sa.Date(), nullable=False), sa.Column("paid_amount", sa.Numeric(14,2), nullable=False), sa.Column("remaining_amount", sa.Numeric(14,2), nullable=False), sa.Column("mora_amount", sa.Numeric(14,2), nullable=False), sa.Column("status", sa.String(20), nullable=False), sa.Column("original_due_date", sa.Date(), nullable=True), sa.Column("restructured_at", sa.DateTime(timezone=True), nullable=True), sa.Column("restructured_by", sa.UUID(), nullable=True), sa.Column("restructure_reason", sa.Text(), nullable=True), sa.Column("id", sa.UUID(), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.CheckConstraint("amount > 0", name=op.f("ck_credit_installments_amount_positive")), sa.CheckConstraint("mora_amount >= 0", name=op.f("ck_credit_installments_mora_non_negative")), sa.CheckConstraint("paid_amount >= 0", name=op.f("ck_credit_installments_paid_non_negative")), sa.ForeignKeyConstraint(["agreement_id"], ["credit_agreements.id"], name=op.f("fk_credit_installments_agreement_id_credit_agreements"), ondelete="CASCADE"), sa.ForeignKeyConstraint(["restructured_by"], ["users.id"], name=op.f("fk_credit_installments_restructured_by_users"), ondelete="SET NULL"), sa.PrimaryKeyConstraint("id", name=op.f("pk_credit_installments")), sa.UniqueConstraint("agreement_id", "number", name=op.f("uq_credit_installments_agreement_number")))
+    op.create_index(op.f("ix_credit_installments_agreement_id"), "credit_installments", ["agreement_id"], unique=False)
+    op.create_index(op.f("ix_credit_installments_due_date"), "credit_installments", ["due_date"], unique=False)
+    op.create_index(op.f("ix_credit_installments_status"), "credit_installments", ["status"], unique=False)
+    op.create_table("credit_payments", sa.Column("installment_id", sa.UUID(), nullable=False), sa.Column("agreement_id", sa.UUID(), nullable=False), sa.Column("amount", sa.Numeric(14,2), nullable=False), sa.Column("method", sa.String(30), nullable=False), sa.Column("method_detail", sa.String(120), nullable=True), sa.Column("reference", sa.String(100), nullable=True), sa.Column("cash_session_id", sa.UUID(), nullable=True), sa.Column("idempotency_key", sa.String(120), nullable=True), sa.Column("paid_at", sa.DateTime(timezone=True), nullable=False), sa.Column("registered_by", sa.UUID(), nullable=True), sa.Column("id", sa.UUID(), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.CheckConstraint("amount > 0", name=op.f("ck_credit_payments_amount_positive")), sa.ForeignKeyConstraint(["agreement_id"], ["credit_agreements.id"], name=op.f("fk_credit_payments_agreement_id_credit_agreements"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["cash_session_id"], ["cash_sessions.id"], name=op.f("fk_credit_payments_cash_session_id_cash_sessions"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["installment_id"], ["credit_installments.id"], name=op.f("fk_credit_payments_installment_id_credit_installments"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["registered_by"], ["users.id"], name=op.f("fk_credit_payments_registered_by_users"), ondelete="SET NULL"), sa.PrimaryKeyConstraint("id", name=op.f("pk_credit_payments")))
+    op.create_index(op.f("ix_credit_payments_agreement_id"), "credit_payments", ["agreement_id"], unique=False)
+    op.create_index(op.f("ix_credit_payments_agreement_paid"), "credit_payments", ["agreement_id", "paid_at"], unique=False)
+    op.create_index(op.f("ix_credit_payments_idempotency_key"), "credit_payments", ["idempotency_key"], unique=True)
+    op.create_index(op.f("ix_credit_payments_installment_id"), "credit_payments", ["installment_id"], unique=False)
+    op.create_table("credit_moras", sa.Column("installment_id", sa.UUID(), nullable=False), sa.Column("agreement_id", sa.UUID(), nullable=False), sa.Column("principal_vencido", sa.Numeric(14,2), nullable=False), sa.Column("rate", sa.Numeric(5,4), nullable=False), sa.Column("mora_amount", sa.Numeric(14,2), nullable=False), sa.Column("period", sa.String(7), nullable=False), sa.Column("applied_at", sa.DateTime(timezone=True), nullable=False), sa.Column("generated_by", sa.String(100), nullable=True), sa.Column("id", sa.UUID(), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.ForeignKeyConstraint(["agreement_id"], ["credit_agreements.id"], name=op.f("fk_credit_moras_agreement_id_credit_agreements"), ondelete="CASCADE"), sa.ForeignKeyConstraint(["installment_id"], ["credit_installments.id"], name=op.f("fk_credit_moras_installment_id_credit_installments"), ondelete="CASCADE"), sa.PrimaryKeyConstraint("id", name=op.f("pk_credit_moras")), sa.UniqueConstraint("installment_id", "period", name=op.f("uq_credit_moras_installment_period")))
+    op.create_index(op.f("ix_credit_moras_agreement_id"), "credit_moras", ["agreement_id"], unique=False)
+    op.create_index(op.f("ix_credit_moras_installment_id"), "credit_moras", ["installment_id"], unique=False)
+    op.create_index(op.f("ix_credit_moras_period"), "credit_moras", ["period"], unique=False)
+    op.create_table("reservations", sa.Column("product_id", sa.UUID(), nullable=False), sa.Column("serialized_unit_id", sa.UUID(), nullable=True), sa.Column("customer_id", sa.UUID(), nullable=False), sa.Column("sale_id", sa.UUID(), nullable=True), sa.Column("credit_agreement_id", sa.UUID(), nullable=True), sa.Column("status", sa.String(30), nullable=False), sa.Column("initial_amount", sa.Numeric(14,2), nullable=False), sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False), sa.Column("created_by", sa.UUID(), nullable=True), sa.Column("id", sa.UUID(), nullable=False), sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False), sa.CheckConstraint("initial_amount >= 0", name=op.f("ck_reservations_initial_non_negative")), sa.ForeignKeyConstraint(["created_by"], ["users.id"], name=op.f("fk_reservations_created_by_users"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["credit_agreement_id"], ["credit_agreements.id"], name=op.f("fk_reservations_credit_agreement_id_credit_agreements"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["customer_id"], ["customers.id"], name=op.f("fk_reservations_customer_id_customers"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["product_id"], ["products.id"], name=op.f("fk_reservations_product_id_products"), ondelete="RESTRICT"), sa.ForeignKeyConstraint(["sale_id"], ["sales.id"], name=op.f("fk_reservations_sale_id_sales"), ondelete="SET NULL"), sa.ForeignKeyConstraint(["serialized_unit_id"], ["serialized_units.id"], name=op.f("fk_reservations_serialized_unit_id_serialized_units"), ondelete="SET NULL"), sa.PrimaryKeyConstraint("id", name=op.f("pk_reservations")))
+    op.create_index(op.f("ix_reservations_credit_agreement_id"), "reservations", ["credit_agreement_id"], unique=False)
+    op.create_index(op.f("ix_reservations_customer_id"), "reservations", ["customer_id"], unique=False)
+    op.create_index(op.f("ix_reservations_expires_at"), "reservations", ["expires_at"], unique=False)
+    op.create_index(op.f("ix_reservations_product_id"), "reservations", ["product_id"], unique=False)
+    op.create_index(op.f("ix_reservations_status"), "reservations", ["status"], unique=False)
+
+
+def downgrade():
+    op.drop_index(op.f("ix_reservations_status"), table_name="reservations")
+    op.drop_index(op.f("ix_reservations_product_id"), table_name="reservations")
+    op.drop_index(op.f("ix_reservations_expires_at"), table_name="reservations")
+    op.drop_index(op.f("ix_reservations_customer_id"), table_name="reservations")
+    op.drop_index(op.f("ix_reservations_credit_agreement_id"), table_name="reservations")
+    op.drop_table("reservations")
+    op.drop_index(op.f("ix_credit_moras_period"), table_name="credit_moras")
+    op.drop_index(op.f("ix_credit_moras_installment_id"), table_name="credit_moras")
+    op.drop_index(op.f("ix_credit_moras_agreement_id"), table_name="credit_moras")
+    op.drop_table("credit_moras")
+    op.drop_index(op.f("ix_credit_payments_installment_id"), table_name="credit_payments")
+    op.drop_index(op.f("ix_credit_payments_idempotency_key"), table_name="credit_payments")
+    op.drop_index(op.f("ix_credit_payments_agreement_paid"), table_name="credit_payments")
+    op.drop_index(op.f("ix_credit_payments_agreement_id"), table_name="credit_payments")
+    op.drop_table("credit_payments")
+    op.drop_index(op.f("ix_credit_installments_status"), table_name="credit_installments")
+    op.drop_index(op.f("ix_credit_installments_due_date"), table_name="credit_installments")
+    op.drop_index(op.f("ix_credit_installments_agreement_id"), table_name="credit_installments")
+    op.drop_table("credit_installments")
+    op.drop_index(op.f("ix_credit_agreements_status"), table_name="credit_agreements")
+    op.drop_index(op.f("ix_credit_agreements_sale_id"), table_name="credit_agreements")
+    op.drop_index(op.f("ix_credit_agreements_customer_id"), table_name="credit_agreements")
+    op.drop_index(op.f("ix_credit_agreements_code"), table_name="credit_agreements")
+    op.drop_table("credit_agreements")
+    op.drop_index(op.f("ix_credit_authorizations_type"), table_name="credit_authorizations")
+    op.drop_index(op.f("ix_credit_authorizations_status"), table_name="credit_authorizations")
+    op.drop_index(op.f("ix_credit_authorizations_customer_id"), table_name="credit_authorizations")
+    op.drop_table("credit_authorizations")

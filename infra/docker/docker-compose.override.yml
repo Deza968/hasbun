@@ -1,0 +1,28 @@
+# Override de desarrollo local.
+# Nota: este equipo tiene servicios locales ocupando los puertos estándar,
+# por eso se remapean aquí (directiva !override de Compose).
+services:
+  postgres:
+    ports: !override
+      - "5433:5432"
+  redis:
+    ports: !override
+      - "6380:6379"
+  minio:
+    ports: !override
+      - "9100:9000"
+      - "9101:9001"
+  web:
+    ports: !override
+      - "3100:3000"
+  flower:
+    ports: !override
+      - "5556:5555"
+  nginx:
+    ports: !override
+      - "8080:80"
+
+  api:
+    environment:
+      ENVIRONMENT: development
+      DEBUG: "true"

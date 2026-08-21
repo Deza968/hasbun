@@ -1,0 +1,1 @@
+"use client";import {useQuery} from "@tanstack/react-query";import {api} from "@/lib/api";export default function Det({params}:{params:{id:string}}){const q=useQuery({queryKey:["customer",params.id],queryFn:async()=>(await api.get(`/customers/${params.id}`)).data}); return <div><pre>{JSON.stringify(q.data,null,2)}</pre></div>}
