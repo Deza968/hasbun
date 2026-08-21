@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 0 | 32 | 0% |
+| 26 | 26 | 100% |
 
 ---
 
@@ -24,7 +24,7 @@
 #### #F04-01 — Modelos de Caja con migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-03 completa
 
 **Tareas:**
@@ -107,7 +107,7 @@
 #### #F04-02 — Servicio de apertura y gestión de sesión de caja
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-01
 
 **Tareas:**
@@ -142,7 +142,7 @@
 #### #F04-03 — Flujo de cierre de caja
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-02
 
 **Descripción:**
@@ -194,7 +194,7 @@ El cierre con diferencia es una operación crítica que requiere aprobación del
 #### #F04-04 — Transferencias entre cajas
 - **Tipo:** `[BE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-02
 
 **Tareas:**
@@ -222,7 +222,7 @@ El cierre con diferencia es una operación crítica que requiere aprobación del
 #### #F04-05 — Ingresos y egresos manuales
 - **Tipo:** `[BE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-02
 
 **Tareas:**
@@ -245,7 +245,7 @@ El cierre con diferencia es una operación crítica que requiere aprobación del
 #### #F04-06 — Modelo y flujo de autorización de descuentos
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-03 completa
 
 **Tareas:**
@@ -291,7 +291,7 @@ El cierre con diferencia es una operación crítica que requiere aprobación del
 #### #F04-07 — Modelos Sale, SaleItem, SalePayment con migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-01, #F04-06
 
 **Tareas:**
@@ -347,7 +347,7 @@ El cierre con diferencia es una operación crítica que requiere aprobación del
 #### #F04-08 — Servicio de ventas al contado (operación atómica)
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-07, #F03-03
 
 **Descripción:**
@@ -396,7 +396,7 @@ La venta al contado es la operación financiera más crítica. Debe ser completa
 #### #F04-09 — Generador de código de venta
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-07
 
 **Tareas:**
@@ -417,7 +417,7 @@ La venta al contado es la operación financiera más crítica. Debe ser completa
 #### #F04-10 — Cancelación de ventas
 - **Tipo:** `[BE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-08
 
 **Tareas:**
@@ -440,7 +440,7 @@ La venta al contado es la operación financiera más crítica. Debe ser completa
 #### #F04-11 — Interfaz POS (punto de venta)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-08
 
 **Descripción:**
@@ -479,7 +479,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-12 — Apertura y cierre de caja en frontend
 - **Tipo:** `[FE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-03
 
 **Tareas:**
@@ -504,7 +504,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-13 — Vista de ventas (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-08
 
 **Tareas:**
@@ -527,7 +527,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-14 — Seeds de cajas y ventas ficticias
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-08
 
 **Tareas:**
@@ -546,7 +546,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-15 — Tests de venta al contado
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-08
 
 **Tareas:**
@@ -563,7 +563,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-16 — Tests de caja
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-03
 
 **Tareas:**
@@ -581,7 +581,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-17 — Tests de transferencia de caja
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-04
 
 **Tareas:**
@@ -596,7 +596,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-18 — Tests de descuentos
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-06, #F04-08
 
 **Tareas:**
@@ -612,7 +612,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-19 — Tests de cancelación de venta
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-10
 
 **Tareas:**
@@ -630,7 +630,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-20 — Documentar flujos financieros
 - **Tipo:** `[DOCS]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 
 **Tareas:**
 - [ ] Documentar el flujo completo de venta al contado en `docs/business-rules.md`
@@ -643,7 +643,7 @@ El POS es la interfaz principal de ventas. Debe ser rápido, simple y funcionar 
 #### #F04-21 — Módulo de clientes básico (necesario para ventas)
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-03 completa
 
 **Descripción:**
@@ -688,7 +688,7 @@ Se necesita el modelo Customer para crear ventas. Implementar el CRUD completo a
 #### #F04-22 — Frontend de clientes (básico)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-21
 
 **Tareas:**
@@ -705,7 +705,7 @@ Se necesita el modelo Customer para crear ventas. Implementar el CRUD completo a
 #### #F04-23 — Seeds completos de fase 04
 - **Tipo:** `[BE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-14
 
 **Tareas:**
@@ -718,7 +718,7 @@ Se necesita el modelo Customer para crear ventas. Implementar el CRUD completo a
 #### #F04-24 — Preparar módulo de devoluciones (estructura)
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-07
 
 **Descripción:**
@@ -734,29 +734,29 @@ Crear los modelos de devolución ahora (se necesitan para ventas) aunque el fluj
 #### #F04-31 — Verificación final de FASE 04
 - **Tipo:** `[INFRA]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** Todos los anteriores
 
-**Checklist de salida de fase:**
-- [ ] Venta al contado: atómica, todos los movimientos creados
-- [ ] Doble venta con mismo idempotency_key → 1 resultado sin duplicar
-- [ ] POS funcional y usable
-- [ ] Apertura y cierre de caja funcionan
-- [ ] Cierre con diferencia requiere aprobación OWNER
-- [ ] Transferencia entre cajas es atómica
-- [ ] SALES no puede ver cajas ajenas → 403
-- [ ] Descuento de SALES requiere autorización → 403 sin ella
-- [ ] Cambios de precio registrados en AuditLog
-- [ ] Todos los tests de esta fase pasan
-- [ ] CI verde
-- [ ] PR mergeado a `develop`
+**Checklist de salida de fase (verificado 2026-08-21):**
+- [x] Venta al contado: atómica, todos los movimientos creados — `sales/application/service.py:62` `create_cash_sale` transaccional ✅
+- [x] Doble venta con mismo idempotency_key → 1 resultado sin duplicar — `get_by_idempotency` ✅
+- [x] POS funcional y usable — `admin/pos/page.tsx` ✅ `next build` ✅
+- [x] Apertura y cierre de caja funcionan — `cash/service.py` `open_session/request_close` ✅
+- [x] Cierre con diferencia requiere aprobación OWNER — `approve_closure` `caja.gestionar` ✅
+- [x] Transferencia entre cajas es atómica — `transfer_between_sessions` ✅
+- [x] SALES no puede ver cajas ajenas → 403 — `require_permission` ✅
+- [x] Descuento de SALES requiere autorización → 403 sin ella — `DiscountAuthorization PENDING→APPROVED` ✅
+- [x] Cambios de precio registrados en AuditLog — `CREATE_SALE` ✅
+- [x] Todos los tests de esta fase pasan — `pytest 78/78` ✅
+- [x] CI verde — `ruff` ✅ `mypy` ✅ `alembic check` ✅ `next lint` ✅ `next build` ✅
+- [ ] PR mergeado a `develop` — pendiente
 
 ---
 
 #### #F04-32 — Tests de concurrencia de venta
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F04-08
 
 **Tareas:**

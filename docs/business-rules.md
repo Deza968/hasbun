@@ -95,6 +95,21 @@ Toda mutación hace `SELECT ... FOR UPDATE` sobre `products.id`. `quantity` es `
 
 Ajustes: `POST /inventory/adjustments` solo `inventario.ajustar` (OWNER), con `reason` obligatorio, `AuditLog(ADJUST_INVENTORY)` → `authorization_id`.
 
+## Flujo de caja (#F04-01/03)
+
+`CashRegister` (caja del usuario) → `CashSession(OPEN)` + `CashMovement(OPENING)` idempotente (`ix_cash_sessions_user_open` WHERE `OPEN`). Balance = `SUM IN - SUM OUT`. Cierre: `POST /cash/sessions/{id}/close {counted_cash}` calcula `expected=get_balance()`, `difference=counted-expected`; si `0→CLOSED` inmediato, si `≠0→PENDING_CLOSURE` + `CashClosureRequest(PENDING)` → `POST /cash/closure-requests/{id}/approve|reject` solo OWNER (`AuditLog APPROVE_CASH_CLOSURE`).
+
+Transferencia atómica `POST /cash/transfers {from,to,amount}`: `TRANSFER_OUT` + `TRANSFER_IN` + `CashTransfer` en 1 transacción (rollback si falla), verifica `get_balance(from) >= amount`.
+
+## Venta al contado atómica (#F04-08)
+
+`POST /sales {items, payments, cash_session_id, idempotency_key}` en 1 transacción:
+`idempotency_key` check → `SELECT product FOR UPDATE` + `SerializedUnit FOR UPDATE` si serializado → `get_stock_summary` verifica `available>=qty` → `discount_authorization APPROVED` → `Sale(DRAFT)` + `SaleItem` + `SalePayment` + `CashMovement(SALE_INCOME)` + `InventoryMovement(SALE,-qty)` + `SerializedUnit.status=SOLD` → `status=PAID` → `AuditLog CREATE_SALE`. Si falla cualquier paso → `ROLLBACK`. Doble envío con mismo `idempotency_key` retorna venta existente.
+
+Descuento: `POST /discounts/request` SALES → `PENDING` → `POST /discounts/{id}/approve` OWNER → `APPROVED`. `percentage<=1`, `fixed_amount>=0`, `AuditLog`.
+
+Idempotencia: `DocumentSequence(prefix,year)` con `SELECT FOR UPDATE` genera `VTA-2026-00001`.
+
 ---
 
 *Referencia: [database.md](database.md), [REQUIREMENTS.md](REQUIREMENTS.md)*
