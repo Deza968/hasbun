@@ -23,6 +23,7 @@ import {
 } from "@/lib/catalog-api";
 import { getErrorMessage, isForbidden } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { RequireSection } from "@/components/guards";
 
 const DATA_TYPES = [
   { value: "STRING", label: "Texto" },
@@ -103,6 +104,7 @@ export default function AtributosPage() {
     : null;
 
   return (
+    <RequireSection section="atributos">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -237,5 +239,6 @@ export default function AtributosPage() {
         </Card>
       )}
     </div>
+    </RequireSection>
   );
 }

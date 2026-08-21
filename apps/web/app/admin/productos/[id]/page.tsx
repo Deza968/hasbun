@@ -23,6 +23,7 @@ import {
 } from "@/lib/catalog-api";
 import { getErrorMessage, isForbidden } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { RequireSection } from "@/components/guards";
 
 export default function ProductoDetallePage() {
   const { id } = useParams<{ id: string }>();
@@ -97,6 +98,7 @@ export default function ProductoDetallePage() {
   if (!product) return null;
 
   return (
+    <RequireSection section="productos">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -313,6 +315,7 @@ export default function ProductoDetallePage() {
         <p className="text-sm text-destructive">No tienes permisos para estas acciones.</p>
       )}
     </div>
+    </RequireSection>
   );
 }
 

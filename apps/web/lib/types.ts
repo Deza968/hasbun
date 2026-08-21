@@ -176,3 +176,104 @@ export interface ExchangeRate {
   effective_at: string;
   created_at: string;
 }
+
+export interface StockItem {
+  product_id: string;
+  sku: string | null;
+  product_name: string | null;
+  available: string;
+  reserved: string;
+  partially_paid: string;
+  on_credit: string;
+  total_physical: string;
+  low_stock: boolean;
+  stock_minimum: number;
+}
+
+export interface StockList {
+  items: StockItem[];
+  total: number;
+}
+
+export interface InventoryMovement {
+  id: string;
+  product_id: string;
+  serialized_unit_id: string | null;
+  quantity: string;
+  movement_type: string;
+  reference_type: string | null;
+  reference_id: string | null;
+  warehouse: string;
+  unit_cost: string | null;
+  notes: string | null;
+  created_by: string | null;
+  authorization_id: string | null;
+  created_at: string;
+  balance: string;
+}
+
+export interface Kardex {
+  product_id: string;
+  product_name: string;
+  sku: string;
+  items: InventoryMovement[];
+  total: number;
+  final_balance: string;
+}
+
+export interface Supplier {
+  id: string;
+  razon_social: string;
+  ruc: string | null;
+  nombre_comercial: string | null;
+  contacto_nombre: string | null;
+  telefono: string | null;
+  telefono_whatsapp: string | null;
+  email: string | null;
+  direccion: string | null;
+  ciudad: string | null;
+  active: boolean;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SupplierList {
+  items: Supplier[];
+  total: number;
+}
+
+export interface PurchaseItem {
+  id: string;
+  product_id: string;
+  product_name: string | null;
+  product_sku: string | null;
+  quantity: string;
+  unit_cost: string;
+  subtotal: string;
+  received_quantity: string;
+  notes: string | null;
+}
+
+export interface Purchase {
+  id: string;
+  code: string;
+  supplier_id: string;
+  supplier_name: string | null;
+  status: string;
+  total: string;
+  currency: string;
+  exchange_rate: string;
+  exchange_rate_source: string | null;
+  invoice_number: string | null;
+  received_at: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  items: PurchaseItem[];
+}
+
+export interface PurchaseList {
+  items: Purchase[];
+  total: number;
+}

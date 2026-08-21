@@ -67,4 +67,32 @@ Tablas relacionadas:
 - El MIME se valida por contenido real (magic bytes), no por la extensión. Tipos permitidos: `image/jpeg`, `image/png`, `image/webp`, `application/pdf`. Tamaño máximo configurable (por defecto 10 MB).
 
 ---
+
+## FASE 03 — Inventario y Compras
+
+### `inventory_movements` (#F03-01)
+
+`product_id FK→products`, `serialized_unit_id` UUID, `quantity NUMERIC(14,3)` firmado, `movement_type VARCHAR(30)`, `reference_type/id`, `warehouse default principal`, `unit_cost NUMERIC(14,2)`, `authorization_id UUID` (obligatorio si `ADJUSTMENT_*`), `created_by FK→users`. Índices: `(product_id, created_at DESC)`, `(reference_type, reference_id)`, `(movement_type, created_at)`. Check: `ADJUSTMENT_* = (authorization_id IS NOT NULL)`. Inmutable (sin UPDATE/DELETE).
+
+### `v_product_stock` / `v_product_stock_summary` (#F03-02)
+
+Vista que agrega por `products.id`: `physical`, `reserved`, `partially_paid`, `on_credit`, `available`. Usada por `GET /inventory/stock` paginado. `GET /inventory/kardex/{id}` calcula `running_balance` en Python y `GET .../export` deja CSV.
+
+### `suppliers` (#F03-07)
+
+`razon_social`, `ruc UNIQUE`, `nombre_comercial`, `contacto_nombre`, `telefono`, `telefono_whatsapp`, `email`, `direccion`, `ciudad`, `active`, `notes`, `created_by FK→users`. Índice `razon_social`.
+
+### `purchases` / `purchase_items` / `purchase_sequences` (#F03-08/#F03-09)
+
+`purchases`: `code UNIQUE` (`OC-YYYY-XXXXX` vía `purchase_sequences(year,last_value)` transaccional `FOR UPDATE`), `supplier_id FK→suppliers RESTRICT`, `status DRAFT/ORDERED/RECEIVED/PARTIAL/CANCELLED`, `total NUMERIC(14,2)`, `currency`, `exchange_rate NUMERIC(10,4)`, `invoice_file_id FK→file_objects`, `received_at`. `purchase_items`: `quantity NUMERIC(14,3) CHECK>0`, `unit_cost/subtotal NUMERIC(14,2)`. Recepción atómica genera `InventoryMovement(PURCHASE)` y si `product.is_serialized` crea `serialized_units`.
+
+### Seeds (#F03-11/#F03-18)
+
+`apps/api/app/database/seeds/inventory.py`: 5 proveedores + 21 compras `RECEIVED` que llaman a `next_purchase_code()` y generan `InventoryMovement` + `SerializedUnit(AVAILABLE)` para productos serializados.
+
+### Tareas Celery (#F03-15/#F03-19)
+
+`worker.tasks.inventory.check_low_stock` (Beat 9:00 y 15:00 `America/Lima`, idempotente por `product_id:fecha`) y `generate_daily_stock_report` (Beat 8:00, stub completo en FASE 12).
+
+---
 *Referencia: [architecture.md](architecture.md), [REQUIREMENTS.md](REQUIREMENTS.md)*

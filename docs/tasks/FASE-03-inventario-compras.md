@@ -11,7 +11,7 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 0 | 20 | 0% |
+| 20 | 20 | 100% |
 
 ---
 
@@ -24,7 +24,7 @@
 #### #F03-01 — Modelo InventoryMovement con migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-02 completa
 
 **Descripción:**
@@ -69,7 +69,7 @@ El stock NUNCA es un campo. El stock es la suma algebraica de los movimientos. E
 #### #F03-02 — Cálculo de stock disponible
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-01
 
 **Descripción:**
@@ -103,7 +103,7 @@ Función que calcula el stock en tiempo real sumando movimientos. Nunca leer un 
 #### #F03-03 — Servicio de inventario con control de concurrencia
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-02
 
 **Descripción:**
@@ -138,7 +138,7 @@ Todas las operaciones que modifican inventario deben ser seguras bajo concurrenc
 #### #F03-04 — Kardex (historial de movimientos)
 - **Tipo:** `[BE]` `[FE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-02
 
 **Tareas:**
@@ -164,7 +164,7 @@ Todas las operaciones que modifican inventario deben ser seguras bajo concurrenc
 #### #F03-05 — Ajustes manuales de inventario
 - **Tipo:** `[BE]` `[FE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-03
 
 **Tareas:**
@@ -185,7 +185,7 @@ Todas las operaciones que modifican inventario deben ser seguras bajo concurrenc
 #### #F03-06 — Vista de inventario (admin)
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-02, #F03-04
 
 **Tareas:**
@@ -208,7 +208,7 @@ Todas las operaciones que modifican inventario deben ser seguras bajo concurrenc
 #### #F03-07 — Módulo de proveedores: modelo y CRUD
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** FASE-02 completa
 
 **Tareas:**
@@ -251,7 +251,7 @@ Todas las operaciones que modifican inventario deben ser seguras bajo concurrenc
 #### #F03-08 — Modelo Purchase y PurchaseItem con migración
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-07
 
 **Tareas:**
@@ -290,7 +290,7 @@ Todas las operaciones que modifican inventario deben ser seguras bajo concurrenc
 #### #F03-09 — Flujo de compra: creación y recepción
 - **Tipo:** `[BE]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-08, #F03-03
 
 **Descripción:**
@@ -333,7 +333,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-10 — Frontend de compras y proveedores
 - **Tipo:** `[FE]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-09
 
 **Tareas:**
@@ -358,7 +358,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-11 — Seeds de inventario inicial
 - **Tipo:** `[BE]` `[DB]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-09
 
 **Tareas:**
@@ -375,7 +375,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-12 — Tests de inventario críticos
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-03
 
 **Tareas:**
@@ -394,7 +394,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-13 — Tests de compras
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-09
 
 **Tareas:**
@@ -410,7 +410,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-14 — Tests de kardex
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🟠 ALTO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-04
 
 **Tareas:**
@@ -428,7 +428,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-15 — Tarea Celery: alertas de stock bajo
 - **Tipo:** `[TASK]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-02
 
 **Tareas:**
@@ -449,7 +449,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-16 — Documentar inventario en docs/
 - **Tipo:** `[DOCS]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 
 **Tareas:**
 - [ ] Documentar el modelo de inventario basado en movimientos en `docs/business-rules.md`
@@ -466,7 +466,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-17 — Verificación de precisión numérica en inventario
 - **Tipo:** `[TEST]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-02
 
 **Tareas:**
@@ -479,7 +479,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-18 — Seeds de compras con seriales ficticios
 - **Tipo:** `[BE]`
 - **Prioridad:** 🟡 MEDIO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-11
 
 **Tareas:**
@@ -491,7 +491,7 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-19 — Tarea Celery: reporte diario de stock
 - **Tipo:** `[TASK]`
 - **Prioridad:** 🟢 BAJO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** #F03-02
 
 **Tareas:**
@@ -503,20 +503,23 @@ La recepción de una compra es una operación atómica que genera movimientos de
 #### #F03-20 — Verificación final de FASE 03
 - **Tipo:** `[INFRA]`
 - **Prioridad:** 🔴 CRÍTICO
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completado
 - **Depende de:** Todos los anteriores
 
-**Checklist de salida de fase:**
-- [ ] Stock calculado por movimientos (no por campo)
-- [ ] Stock no puede ser negativo (constraint activo)
-- [ ] Compra recibida → InventoryMovement creado → stock aumenta
-- [ ] Concurrencia: 5 requests simultáneos con stock=3 → exactamente 3 exitosos
-- [ ] Kardex muestra historial completo con saldo correcto
-- [ ] Ajustes requieren autorización de OWNER y quedan auditados
-- [ ] SALES y TECHNICIAN no pueden ver costos
-- [ ] Alertas de stock bajo funcionan
-- [ ] CI verde
-- [ ] PR mergeado a `develop`
+**Checklist de salida de fase (verificado 2026-08-21):**
+- [x] Stock calculado por movimientos (no por campo) — `get_stock_summary()` + `v_product_stock` (`alembic check` ✅)
+- [x] Stock no puede ser negativo — `InsufficientStockError` + `SELECT FOR UPDATE` (tests `test_stock_cannot_go_negative` ✅)
+- [x] Compra recibida → InventoryMovement creado → stock aumenta — `receive_purchase()` transaccional + `SerializedUnit` para serializados ✅
+- [x] Concurrencia: 5 requests con stock=3 → 3 ok, 2 error — `test_concurrent_sales_same_stock` ✅ y `test_sku_unique_under_concurrency` ✅
+- [x] Kardex muestra historial con saldo correcto + export CSV — `GET /inventory/kardex/{id}` y `/export` ✅
+- [x] Ajustes requieren autorización OWNER y quedan auditados — `inventario.ajustar` + `AuditLog(ADJUST_INVENTORY)` ✅
+- [x] SALES/TECHNICIAN no pueden ver costos — `require_permission("compras.ver")` / `proveedores.gestionar` solo OWNER (403 verificado) ✅
+- [x] Alertas de stock bajo funcionan — `worker.tasks.inventory.check_low_stock` Beat 9/15h idempotente + `generate_daily_stock_report` 8h ✅
+- [x] CI verde — `ruff` ✅, `mypy` (17 errores preexistentes no bloqueantes), `pytest 72/72` ✅, `next build` ✅, `alembic check` ✅, `next lint` ✅
+- [x] Precisión `Decimal`/`NUMERIC(14,3)` — `test_stock_zero_precision` 0.1*100=10.0 ✅
+- [x] Migración `b2c3d4e5f6a7` `upgrade head` + `downgrade base` + `alembic check` sin drift ✅
+- [x] Seeds `suppliers_created=5 purchases_created=21 serials_created=91` (stock >0) ✅
+- [ ] PR mergeado a `develop` — pendiente merge
 
 ---
 

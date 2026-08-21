@@ -24,14 +24,17 @@ api.interceptors.response.use(
       config &&
       !config._retry &&
       !config.url?.includes("/auth/login") &&
-      !config.url?.includes("/auth/refresh")
+      !config.url?.includes("/auth/refresh") &&
+      !config.url?.includes("/auth/me")
     ) {
       config._retry = true;
       try {
         await api.post("/auth/refresh");
         return await api.request(config);
       } catch {
-        window.location.href = "/login";
+        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
         return Promise.reject(error);
       }
     }

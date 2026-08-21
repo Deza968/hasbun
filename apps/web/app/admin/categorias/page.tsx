@@ -22,6 +22,7 @@ import {
 } from "@/lib/catalog-api";
 import { getErrorMessage, isForbidden } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { RequireSection } from "@/components/guards";
 
 function CategoryTree({
   nodes,
@@ -121,6 +122,7 @@ export default function CategoriasPage() {
   }
 
   return (
+    <RequireSection section="categorias">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -182,5 +184,6 @@ export default function CategoriasPage() {
         </Card>
       )}
     </div>
+    </RequireSection>
   );
 }

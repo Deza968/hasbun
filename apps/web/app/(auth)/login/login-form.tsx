@@ -30,7 +30,7 @@ function homeForUser(roles: string[]): string {
     "technician",
     "software",
   ];
-  if (roles.some((r) => adminRoles.includes(r))) return "/admin";
+  if (roles.some((r) => adminRoles.includes(r.toLowerCase()))) return "/admin";
   return "/customer";
 }
 
