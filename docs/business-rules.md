@@ -57,5 +57,44 @@ Prefijos de semilla (cargados por `seed_sku_prefixes`):
 | `RED` | Redes |
 | `ALM` | Alarmas / seguridad |
 
+## Modelo de inventario basado en movimientos (#F03-01 — #F03-05)
+
+El stock **nunca es un campo** (`products.stock`). Se calcula como suma algebraica de `inventory_movements.quantity`.
+
+| Tipo `movement_type` | Signo | Cuándo | `reference_type` |
+|---|---|---|---|
+| `PURCHASE` | + | Recepción de compra (`POST /purchases/{id}/receive`) | `purchase` |
+| `SALE` | - | Venta confirmada | `sale` |
+| `RESERVATION` | - | Reserva temporal (se resta de `available`) | `sale` |
+| `RELEASE_RESERVATION` | + | Liberación de reserva | `sale` |
+| `PARTIAL_PAYMENT_HOLD` | - | Apartado / pago parcial | `sale` |
+| `CREDIT_DELIVERY` / `SALE_COMPLETED` | -/+ | Entrega a crédito y liquidación | `sale` |
+| `RETURN` / `REPAIR_RETURN` | + | Devolución / retorno de reparación | `return`/`repair` |
+| `ADJUSTMENT_IN` / `ADJUSTMENT_OUT` | +/- | Conteo físico (requiere `authorization_id` → `AuditLog`) | `adjustment` |
+| `REPAIR_USAGE` / `DAMAGED` / `TRANSFER` | - | Consumo en reparación, dañado, traslado | `repair` |
+
+### Cálculo de stock (`get_stock_summary` — #F03-02)
+
+Una sola query agregada (sin `float`, todo `Decimal`/`NUMERIC`):
+
+```
+physical       = SUM(quantity WHERE type IN PHYSICAL_IN ∪ PHYSICAL_OUT)
+reserved       = -SUM(quantity WHERE type IN {RESERVATION,RELEASE_RESERVATION})
+partially_paid = -SUM(quantity WHERE type = PARTIAL_PAYMENT_HOLD)
+on_credit      = -SUM(quantity WHERE type IN {CREDIT_DELIVERY,SALE_COMPLETED})
+available      = physical - reserved - partially_paid - on_credit
+total_physical = physical
+low_stock      = available <= product.stock_minimum
+```
+
+Vista `v_product_stock` precalcula por producto para listados masivos (`GET /inventory/stock?search=&low=`). `GET /inventory/kardex/{id}` devuelve saldo acumulado (`running_balance`) cronológico y export CSV (`/export`).
+
+### Concurrencia (#F03-03)
+
+Toda mutación hace `SELECT ... FOR UPDATE` sobre `products.id`. `quantity` es `NUMERIC(14,3)` y tests verifican `0.1 * 100 = 10.0` sin pérdida (`Decimal`). `InventoryMovement` es **inmutable**: repositorio solo `INSERT`, sin `update/delete`.
+
+Ajustes: `POST /inventory/adjustments` solo `inventario.ajustar` (OWNER), con `reason` obligatorio, `AuditLog(ADJUST_INVENTORY)` → `authorization_id`.
+
 ---
+
 *Referencia: [database.md](database.md), [REQUIREMENTS.md](REQUIREMENTS.md)*

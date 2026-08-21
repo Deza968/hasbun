@@ -15,7 +15,11 @@ celery_app = Celery(
     "hasbun",
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
-    include=["worker.tasks.health", "worker.tasks.exchange_rates"],
+    include=[
+        "worker.tasks.health",
+        "worker.tasks.exchange_rates",
+        "worker.tasks.inventory",
+    ],
 )
 
 celery_app.conf.update(
@@ -38,6 +42,18 @@ celery_app.conf.update(
             "schedule": crontab(
                 minute=0, hour=settings.EXCHANGE_RATE_UPDATE_HOUR
             ),
+        },
+        "check-low-stock-morning": {
+            "task": "worker.tasks.inventory.check_low_stock",
+            "schedule": crontab(minute=0, hour=9),
+        },
+        "check-low-stock-afternoon": {
+            "task": "worker.tasks.inventory.check_low_stock",
+            "schedule": crontab(minute=0, hour=15),
+        },
+        "daily-stock-report": {
+            "task": "worker.tasks.inventory.generate_daily_stock_report",
+            "schedule": crontab(minute=0, hour=8),
         },
     },
 )

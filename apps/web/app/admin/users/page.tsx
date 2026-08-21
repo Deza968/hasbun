@@ -39,6 +39,7 @@ import {
   removeRole,
 } from "@/lib/auth-api";
 import { getErrorMessage, isForbidden } from "@/lib/api";
+import { RequireSection } from "@/components/guards";
 
 export default function UsersPage() {
   const queryClient = useQueryClient();
@@ -128,6 +129,7 @@ export default function UsersPage() {
   }
 
   return (
+    <RequireSection section="users">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -329,5 +331,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </RequireSection>
   );
 }

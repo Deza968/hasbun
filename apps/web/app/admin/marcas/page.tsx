@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { createBrand, deactivateBrand, fetchBrands } from "@/lib/catalog-api";
 import { getErrorMessage, isForbidden } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { RequireSection } from "@/components/guards";
 
 export default function MarcasPage() {
   const queryClient = useQueryClient();
@@ -68,6 +69,7 @@ export default function MarcasPage() {
   }
 
   return (
+    <RequireSection section="marcas">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -146,5 +148,6 @@ export default function MarcasPage() {
         </Card>
       )}
     </div>
+    </RequireSection>
   );
 }
