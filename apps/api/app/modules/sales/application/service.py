@@ -26,7 +26,7 @@ async def request_discount(db: AsyncSession, *, data, requested_by):
         raise ValidationError("Monto inválido")
     auth = DiscountAuthorization(
         sale_id=data.sale_id, type=data.type, percentage=data.percentage, fixed_amount=data.fixed_amount,
-        reason=data.reason, requested_by=requested_by.id, status="PENDING"
+        reason=data.reason, requested_by=requested_by.id, status="PENDING", requested_at=datetime.now(UTC)
     )
     db.add(auth)
     await db.commit()
@@ -161,7 +161,7 @@ async def create_cash_sale(db: AsyncSession, *, data, user):
     for p in data.payments or []:
         amt = Decimal(str(p.get("amount", 0)))
         pay_total += amt
-        sp = SalePayment(sale_id=sale.id, method=p.get("method", "CASH"), amount=amt, reference=p.get("reference"), registered_by=user.id, idempotency_key=p.get("idempotency_key"))
+        sp = SalePayment(sale_id=sale.id, method=p.get("method", "CASH"), amount=amt, reference=p.get("reference"), registered_by=user.id, idempotency_key=p.get("idempotency_key"), paid_at=datetime.now(UTC))
         db.add(sp)
     if pay_total < sale.total:
         # permite pagos parciales? para CASH exige total

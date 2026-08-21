@@ -38,7 +38,7 @@ class DiscountAuthorization(BaseModel, Base):
     requested_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
     approved_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="PENDING", index=True)
-    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
@@ -104,7 +104,7 @@ class SalePayment(BaseModel, Base):
     amount: Mapped[Decimal] = mapped_column(Numeric(14, 2), nullable=False)
     reference: Mapped[str | None] = mapped_column(String(100), nullable=True)
     idempotency_key: Mapped[str | None] = mapped_column(String(80), unique=True, nullable=True)
-    paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    paid_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     registered_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
     sale: Mapped[Sale] = relationship("Sale", back_populates="payments", lazy="selectin")
