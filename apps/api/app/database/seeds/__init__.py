@@ -7,6 +7,7 @@ from __future__ import annotations
 import app.modules.attributes.domain.models  # noqa: F401
 import app.modules.brands.domain.models  # noqa: F401
 import app.modules.categories.domain.models  # noqa: F401
+import app.modules.customers.domain.models  # noqa: F401
 import app.modules.exchange_rates.domain.models  # noqa: F401
 import app.modules.files.domain.models  # noqa: F401
 import app.modules.inventory.domain.models  # noqa: F401
@@ -17,6 +18,7 @@ import app.modules.roles.domain.models  # noqa: F401
 import app.modules.suppliers.domain.models  # noqa: F401
 import app.modules.users.domain.models  # noqa: F401
 from app.database.seeds.catalog import seed_catalog
+from app.database.seeds.customers import seed_customers
 from app.database.seeds.inventory import seed_inventory
 from app.database.seeds.permissions import seed_permissions
 from app.database.seeds.roles import seed_roles
@@ -28,4 +30,5 @@ __all__ = [
     "seed_users",
     "seed_catalog",
     "seed_inventory",
+    "seed_customers",
 ]

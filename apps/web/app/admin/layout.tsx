@@ -14,6 +14,10 @@ const allItems = [
   { href: "/admin/inventario", label: "Inventario", section: "inventario" },
   { href: "/admin/proveedores", label: "Proveedores", section: "proveedores" },
   { href: "/admin/compras", label: "Compras", section: "compras" },
+  { href: "/admin/caja", label: "Caja", section: "caja" },
+  { href: "/admin/pos", label: "POS", section: "pos" },
+  { href: "/admin/ventas", label: "Ventas", section: "ventas" },
+  { href: "/admin/clientes", label: "Clientes", section: "clientes" },
   { href: "/admin/users", label: "Usuarios", section: "users" },
   { href: "/profile", label: "Mi perfil", section: "profile" },
 ];

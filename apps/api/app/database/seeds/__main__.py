@@ -7,6 +7,7 @@ import asyncio
 from app.database.base import Base
 from app.database.seeds import (
     seed_catalog,
+    seed_customers,
     seed_inventory,
     seed_permissions,
     seed_roles,
@@ -16,6 +17,7 @@ from app.database.session import AsyncSessionLocal, engine
 from app.modules.attributes.domain import models as attributes_models  # noqa: F401
 from app.modules.brands.domain import models as brands_models  # noqa: F401
 from app.modules.categories.domain import models as categories_models  # noqa: F401
+from app.modules.customers.domain import models as customers_models  # noqa: F401
 from app.modules.exchange_rates.domain import models as exchange_rates_models  # noqa: F401
 from app.modules.files.domain import models as files_models  # noqa: F401
 from app.modules.inventory.domain import models as inventory_models  # noqa: F401
@@ -36,6 +38,7 @@ async def main() -> None:
         print(await seed_users(db))
         print(await seed_catalog(db))
         print(await seed_inventory(db))
+        print(await seed_customers(db))
     await engine.dispose()
 
 
