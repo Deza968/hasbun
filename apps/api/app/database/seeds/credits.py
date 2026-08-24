@@ -321,6 +321,17 @@ async def seed_credits(db: AsyncSession) -> dict[str, int]:
         await _pay_installment_seed(db, inst, ag_paid, inst.amount, owner, key=f"{ag_paid.code}-{i}-FULL")
     ag_paid.status = AgreementStatus.PAID
     sale_paid.status = "COMPLETED"
+    # al completarse el crédito su reserva se convierte en venta (#F05-06 paso 9)
+    paid_reservation = (
+        await db.execute(
+            select(Reservation).where(
+                Reservation.sale_id == sale_paid.id,
+                Reservation.status == ReservationStatus.ACTIVE,
+            )
+        )
+    ).scalars().first()
+    if paid_reservation is not None:
+        paid_reservation.status = ReservationStatus.CONVERTED_TO_SALE
 
     # --- DEFAULTED: 2 cuotas vencidas con mora en 2 períodos ---
     _, ag_defaulted = await _build_credit(

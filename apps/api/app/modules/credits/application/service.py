@@ -15,10 +15,10 @@ from __future__ import annotations
 import calendar
 import logging
 import uuid
-from typing import Any
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
+from typing import Any
 
 from app.core.config import settings
 from app.core.exceptions import BusinessRuleError, NotFoundError, ValidationError
@@ -936,6 +936,7 @@ async def deliver_on_credit(db: AsyncSession, *, agreement_id: uuid.UUID, user) 
         raise BusinessRuleError("La venta no tiene ítems para entregar")
 
     agreement.status = AgreementStatus.ACTIVE
+    fresh = await repository.get_agreement(db, agreement.id)
     await db.commit()
     await _audit(
         action="DELIVER_ON_CREDIT",
@@ -943,7 +944,7 @@ async def deliver_on_credit(db: AsyncSession, *, agreement_id: uuid.UUID, user) 
         entity=agreement,
         new_values={"code": agreement.code, "delivered_items": len(sale.items)},
     )
-    return await repository.get_agreement(db, agreement.id)  # type: ignore[return-value]
+    return fresh  # type: ignore[return-value]
 
 
 # ---------------------------------------------------------------------------

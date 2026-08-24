@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/sidebar";
 
 const items = [
   { href: "/customer", label: "Panel" },
+  { href: "/customer/cuotas", label: "Mis cuotas" },
   { href: "/profile", label: "Mi perfil" },
 ];
 

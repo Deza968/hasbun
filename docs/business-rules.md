@@ -110,6 +110,69 @@ Descuento: `POST /discounts/request` SALES → `PENDING` → `POST /discounts/{i
 
 Idempotencia: `DocumentSequence(prefix,year)` con `SELECT FOR UPDATE` genera `VTA-2026-00001`.
 
+## Créditos, cuotas y mora (#F05)
+
+### Validación pre-crédito (`validate_customer_for_credit` — #F05-04)
+
+Se ejecuta antes de aprobar cualquier crédito, **en orden y deteniéndose en el primer bloqueo**:
+
+| # | Regla | Bloqueo | Excepción |
+|---|---|---|---|
+| 1 | Morosidad activa (cuota `OVERDUE`) | `CUSTOMER_DELINQUENT` | `CreditAuthorization(OVERRIDE_DELINQUENCY)` OWNER |
+| 2 | Límite: Σ saldos de cuotas vigentes + nuevo monto ≤ `customer.credit_limit` | `CREDIT_LIMIT_EXCEEDED` | `OVERRIDE_LIMIT` OWNER |
+| 3 | Múltiples créditos en (`ACTIVE`,`OVERDUE`) | `MULTIPLE_CREDITS` | `MULTIPLE_CREDITS` OWNER |
+| 4 | Inicial: si `initial_payment = 0` y cliente no frecuente → bloquea; si `initial < credit_min_initial_percent × total` → advertencia | `INITIAL_REQUIRED` | `WAIVE_INITIAL` OWNER |
+
+Si pasa todo → `APPROVED`. El endpoint `POST /credits/validate` devuelve la lista de bloqueos/advertencias para que el frontend muestre qué autorización se necesita.
+
+### Creación atómica del crédito (#F05-05)
+
+`POST /credits` en 1 transacción: validación → `Sale(CREDIT, PARTIALLY_PAID)` + ítems con precio vigente (oferta > precio) → pago inicial como `SalePayment` + `CashMovement(CREDIT_PAYMENT)` si hay sesión abierta → `CreditAgreement(ACTIVE)` → N `CreditInstallment` → `InventoryMovement(RESERVATION,-qty)` + `SerializedUnit(RESERVED)` si aplica → `Reservation` → `AuditLog(CREATE_CREDIT)`. Cualquier fallo hace rollback total. TC se congela en el acuerdo al crear.
+
+### Calendario de cuotas
+
+- Base = `financed / n` (la última cuota absorbe el redondeo).
+- Cuotas dentro de los `interest_free_months`: sin interés.
+- Cuotas posteriores: `base + financed × interest_rate` (interés flat sobre el saldo financiado, nunca compuesto).
+
+**Ejemplo** (#F05-23): crédito S/2500, inicial S/500 → financiado S/2000; 4 cuotas, 2 meses gracia, 3% después:
+cuota1 = 500.00 (vence mes 1), cuota2 = 500.00 (mes 2), cuota3 = 560.00, cuota4 = 560.00.
+
+### Pago de cuotas (#F05-06/#F05-07)
+
+- `POST /installments/{id}/pay {amount, method, idempotency_key}`: `SELECT FOR UPDATE`; el pago cubre primero capital, luego mora. Parcial → `PARTIALLY_PAID` con `remaining_amount` actualizado; completo → `PAID`.
+- Idempotencia por `idempotency_key` único: reenvío no duplica `CreditPayment` ni `CashMovement`.
+- Última cuota pagada → `CreditAgreement(PAID)` + `Sale(COMPLETED)` + `InventoryMovement(SALE_COMPLETED)` + `SerializedUnit(SOLD)` + reservas a `CONVERTED_TO_SALE` + `AuditLog(CREDIT_COMPLETED)`.
+- Pago adelantado `POST /credits/{id}/pay-multiple`: el monto se distribuye desde la cuota más antigua; un `CreditPayment` por cuota afectada; jamás altera pagos históricos.
+
+### Mora mensual al 3% sin capitalizar (#F05-08/#F05-09)
+
+- Tarea Celery `apply_daily_mora` (6 AM, America/Lima): solo actúa el día 1 del mes.
+- Para cada cuota `PENDING/PARTIALLY_PAID` con `due_date < inicio del período`:
+  - **Idempotencia**: `UNIQUE (installment_id, period)` en `credit_moras` + verificación previa → nunca doble mora.
+  - `mora = remaining_amount × settings.MORA_RATE (0.03)` sobre **capital puro** → la mora del mes siguiente NO incluye moras anteriores (nunca capitaliza).
+  - La cuota pasa a `OVERDUE` y su `mora_amount` acumula.
+- Acuerdos: con cuotas vencidas → `OVERDUE`; superan `CREDIT_DEFAULTED_MIN_OVERDUE` → `DEFAULTED` + registro para notificar OWNER.
+- Cálculo siempre con `Decimal`, redondeo a 2 decimales (`ROUND_HALF_UP`).
+
+Ejemplo: capital S/100 vencido → mora mes 1 = 3.00 (deuda 103.00); mora mes 2 = 3.00 otra vez (**no** 3% sobre 103). Nunca se cobra mora sobre mora.
+
+### Reprogramación (#F05-10) y entrega anticipada (#F05-11)
+
+- `PUT /installments/{id}/restructure {new_due_date, reason}` solo OWNER; conserva `original_due_date` original, registra motivo en `AuditLog(RESTRUCTURE_CREDIT)`; si pasa de `OVERDUE` a fecha futura puede volver a `PENDING`.
+- `POST /credits/{id}/deliver` solo OWNER (`creditos.aprobar`): libera reserva (`RELEASE_RESERVATION`), registra `CREDIT_DELIVERY`, serializados a `DELIVERED_ON_CREDIT` (no vuelven al stock vendible), reservas a `CONVERTED_TO_CREDIT`. Al cancelarse todo el crédito las unidades ya entregadas se liquidan vía `SALE_COMPLETED` cuando se paga la última cuota.
+
+### Estados del crédito
+
+```
+PENDING_APPROVAL → APPROVED → ACTIVE ⇄ OVERDUE → PAID
+                                    ↓
+                               DEFAULTED
+ACTIVE/APPROVED → CANCELLED ; ACTIVE → RESTRUCTURED
+```
+
+Inventario por etapa: creado → stock `reserved` (RESERVATION); entregado → `on_credit` (CREDIT_DELIVERY); pagado → `on_credit` liquidado (SALE_COMPLETED); nunca vuelve a `available` mientras exista el crédito.
+
 ---
 
 *Referencia: [database.md](database.md), [REQUIREMENTS.md](REQUIREMENTS.md)*

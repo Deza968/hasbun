@@ -11,7 +11,9 @@
 
 | Completados | Total | Porcentaje |
 |---|---|---|
-| 0 | 30 | 0% |
+| 30 | 30 | 100% |
+
+> **Verificación 2026-08-24:** 112/112 tests API (`pytest`, incluye los 35 de `test_credits.py`), ruff y mypy limpios, seeds verificados (6 acuerdos: 3 ACTIVE, 1 OVERDUE con mora, 1 PAID con reserva convertida a venta, 1 DEFAULTED con mora en 2 períodos), `next build` OK con las vistas de créditos/cuotas/morosidad/portal cliente. Pendiente: PR → `develop`.
 
 ---
 

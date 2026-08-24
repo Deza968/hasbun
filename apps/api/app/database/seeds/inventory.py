@@ -135,6 +135,8 @@ async def _resolve_owner(db: AsyncSession) -> User:
     owner = (
         await db.execute(select(User).where(User.email == "owner@hasbun.dev"))
     ).scalars().first()
+    if owner is None:
+        raise RuntimeError("owner@hasbun.dev no existe: ejecutar seed_users primero")
     return owner
 
 

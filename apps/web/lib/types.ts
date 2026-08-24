@@ -277,3 +277,110 @@ export interface PurchaseList {
   items: Purchase[];
   total: number;
 }
+
+// --- Créditos y cuotas (FASE 05) ---
+
+export interface CreditInstallment {
+  id: string;
+  agreement_id: string;
+  number: number;
+  amount: string;
+  due_date: string;
+  original_due_date: string | null;
+  paid_amount: string;
+  remaining_amount: string;
+  mora_amount: string;
+  total_due: string;
+  status: string;
+  restructure_reason: string | null;
+}
+
+export interface CreditAgreement {
+  id: string;
+  code: string;
+  customer_id: string;
+  sale_id: string;
+  status: string;
+  total_amount: string;
+  initial_payment: string;
+  financed_amount: string;
+  number_of_installments: number;
+  installment_amount: string;
+  interest_rate: string;
+  interest_free_months: number;
+  currency: string;
+  exchange_rate: string;
+  first_due_date: string;
+  created_at: string;
+  installments: CreditInstallment[];
+}
+
+export interface CreditAgreementSummary {
+  id: string;
+  code: string;
+  customer_id: string;
+  customer_name: string | null;
+  status: string;
+  total_amount: string;
+  financed_amount: string;
+  number_of_installments: number;
+  paid_installments: number;
+  overdue_installments: number;
+  pending_total: string;
+  created_at: string;
+}
+
+export interface CreditAgreementList {
+  items: CreditAgreementSummary[];
+  total: number;
+}
+
+export interface InstallmentList {
+  items: CreditInstallment[];
+  total: number;
+}
+
+export interface CreditBlocker {
+  type: string;
+  authorization: string;
+  message: string;
+}
+
+export interface ValidationResponse {
+  approved: boolean;
+  blockers: CreditBlocker[];
+  warnings: CreditBlocker[];
+}
+
+export interface DelinquencyRow {
+  customer_id: string;
+  customer_name: string | null;
+  active_credits: number;
+  overdue_installments: number;
+  overdue_capital: string;
+  mora_total: string;
+  days_late_max: number;
+}
+
+export interface DelinquencyResponse {
+  rows: DelinquencyRow[];
+  mora_system_total: string;
+  affected_customers: number;
+}
+
+export interface CustomerOption {
+  id: string;
+  type: string;
+  first_name: string | null;
+  last_name: string | null;
+  razon_social: string | null;
+  dni: string | null;
+  credit_limit: string;
+  is_frequent: boolean;
+  active: boolean;
+}
+
+export interface CustomerOptionList {
+  items: CustomerOption[];
+  total: number;
+}

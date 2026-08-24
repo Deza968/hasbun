@@ -10,6 +10,9 @@ const SECTION_PERMISSIONS: Record<string, string[]> = {
   inventario: ["inventario.ver"],
   proveedores: ["proveedores.gestionar"],
   compras: ["compras.ver"],
+  creditos: ["creditos.ver"],
+  cuotas: ["cuotas.gestionar"],
+  morosidad: ["creditos.aprobar"],
 };
 
 export function userPermissions(user: User | null): string[] {

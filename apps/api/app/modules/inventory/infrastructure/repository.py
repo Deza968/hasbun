@@ -189,7 +189,7 @@ async def sum_movements(
             )
         )
     ).scalar()
-    return Decimal(value)
+    return Decimal(str(value))
 
 
 async def add_movement(db: AsyncSession, **fields) -> InventoryMovement:

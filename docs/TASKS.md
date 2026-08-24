@@ -16,7 +16,7 @@
 | [FASE 02](tasks/FASE-02-catalogo.md) | Catálogo de Productos | 24 | ✅ Completada (24/24, verificación backend hecha 2026-08-20) | `feature/fase-02-catalogo` |
 | [FASE 03](tasks/FASE-03-inventario-compras.md) | Inventario y Compras | 20 | ✅ Completada (20/20, verificación 2026-08-21: 72/72 tests, alembic check, seeds 5/21/91) | `feature/fase-03-inventario` |
 | [FASE 04](tasks/FASE-04-caja-pos-ventas.md) | Caja, POS y Ventas | 26 | ✅ Completada (26/26, verificación 2026-08-21: 78/78 tests, alembic check, next build) | `feature/fase-04-ventas` |
-| [FASE 05](tasks/FASE-05-creditos-cuotas-mora.md) | Créditos, Cuotas y Mora | 30 | ⬜ Pendiente | `feature/fase-05-creditos` |
+| [FASE 05](tasks/FASE-05-creditos-cuotas-mora.md) | Créditos, Cuotas y Mora | 30 | ✅ Completada (30/30, verificación 2026-08-24: 112/112 tests, ruff+mypy, seeds 6/6/3, next build; PR a develop pendiente) | `feature/fase-05-creditos` |
 | [FASE 06](tasks/FASE-06-cotizaciones-whatsapp.md) | Cotizaciones y WhatsApp | 22 | ⬜ Pendiente | `feature/fase-06-cotizaciones` |
 | [FASE 07](tasks/FASE-07-reparaciones.md) | Reparaciones | 28 | ⬜ Pendiente | `feature/fase-07-reparaciones` |
 | [FASE 08](tasks/FASE-08-mantenimientos-instalaciones-envios.md) | Mantenimientos, Instalaciones y Envíos | 26 | ⬜ Pendiente | `feature/fase-08-servicios` |

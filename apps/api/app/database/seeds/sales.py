@@ -100,7 +100,7 @@ async def seed_sales(db: AsyncSession) -> dict[str, int]:
         return {"sales_created": 0, "sales_total": int(total_existing), "error": 1}
 
     # Productos candidatos con stock >0 (se calcula una vez, luego se revalida por item)
-    products: list[Product] = (await db.execute(select(Product).where(Product.active.is_(True)))).scalars().all()
+    products = list((await db.execute(select(Product).where(Product.active.is_(True)))).scalars().all())
     # Mezclar para aleatoriedad determinística por seed
     random.shuffle(products)
 
@@ -114,7 +114,7 @@ async def seed_sales(db: AsyncSession) -> dict[str, int]:
     if not available_products:
         return {"sales_created": 0, "sales_total": int(total_existing), "no_stock": 1}
 
-    customers: list[Customer] = (await db.execute(select(Customer))).scalars().all()
+    customers = list((await db.execute(select(Customer))).scalars().all())
 
     created = 0
     # Guardar productos disponibles para re-evaluar stock en cada venta

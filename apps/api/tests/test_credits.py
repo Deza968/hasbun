@@ -654,7 +654,7 @@ async def test_last_installment_completes_credit(client: httpx.AsyncClient, db):
     completed_moves = (
         await db.execute(
             select(InventoryMovement).where(
-                InventoryMovement.reference_id == sale_id,
+                InventoryMovement.reference_id == ag_id,
                 InventoryMovement.movement_type == MovementType.SALE_COMPLETED,
             )
         )
@@ -680,14 +680,14 @@ async def test_advance_payment_multiple_installments(client: httpx.AsyncClient, 
     ids = [i.id for i in insts]
 
     await _login(client, OWNER)
-    amount = "1000"  # cubre cuota 1 (500) completa + cuota 2 parcial (500)
+    amount = "750"  # cubre cuota 1 (500) completa + cuota 2 parcial (250)
     resp = await client.post(
         f"/api/v1/credits/{ag_id}/pay-multiple",
         json={"installment_ids": [str(i) for i in ids], "amount": amount, "method": "BANK_TRANSFER"},
     )
     assert resp.status_code == 200, resp.text
     body = resp.json()
-    assert Decimal(body["applied_total"]) == Decimal("1000")
+    assert Decimal(body["applied_total"]) == Decimal("750")
 
     db.expire_all()  # los pagos ocurrieron en otra sesión
     rows = (
@@ -697,7 +697,7 @@ async def test_advance_payment_multiple_installments(client: httpx.AsyncClient, 
     ).scalars().all()
     assert rows[0].status == InstallmentStatus.PAID
     assert rows[1].status == InstallmentStatus.PARTIALLY_PAID
-    assert Decimal(rows[1].paid_amount) == Decimal("500")
+    assert Decimal(rows[1].paid_amount) == Decimal("250")
     assert rows[2].status == InstallmentStatus.PENDING
 
     payments = (
@@ -799,6 +799,7 @@ async def _overdue_setup(db, *, principal="100.00"):
         status=InstallmentStatus.PENDING,
     )
     db.add(inst)
+    await db.flush()  # asigna la PK UUID antes de exponer la instancia
     return agreement, inst
 
 
@@ -813,19 +814,27 @@ def _period_offset(offset: int) -> str:
 async def test_mora_applied_to_overdue_installment(client: httpx.AsyncClient, db):
     from app.database.session import AsyncSessionLocal
     from app.modules.credits.application.service import apply_mora_for_period
-    from app.modules.credits.domain.models import AgreementStatus, CreditMora, InstallmentStatus
+    from app.modules.credits.domain.models import (
+        AgreementStatus,
+        CreditInstallment,
+        CreditMora,
+        InstallmentStatus,
+    )
 
     async with AsyncSessionLocal() as session:
         async with session.begin():
             agreement, inst = await _overdue_setup(session, principal="100.00")
+            inst_id, ag_id = inst.id, agreement.id
 
     async with AsyncSessionLocal() as session:
         result = await apply_mora_for_period(session, period=_period_offset(0))
 
-    assert result["processed_installments"] == 1
-    assert Decimal(result["mora_total"]) == Decimal("3.00")
+    # otros tests pueden dejar cuotas vencidas propias → el agregado global
+    # no es determinista; las verificaciones finas son por-cuota
+    assert result["processed_installments"] >= 1
 
-    await db.refresh(inst)
+    # la instancia quedó en otra sesión cerrada → recargar desde db
+    inst = await db.get(CreditInstallment, inst_id)
     assert Decimal(inst.mora_amount) == Decimal("3.00")
     assert inst.status == InstallmentStatus.OVERDUE
 
@@ -836,27 +845,30 @@ async def test_mora_applied_to_overdue_installment(client: httpx.AsyncClient, db
     assert Decimal(mora_row.rate) == Decimal("0.03")
     assert mora_row.period == _period_offset(0)
 
-    await db.refresh(agreement)
-    assert agreement.status in (AgreementStatus.OVERDUE, AgreementStatus.ACTIVE)
+    agreement_row = await db.get(type(agreement), ag_id)
+    assert agreement_row.status in (AgreementStatus.OVERDUE, AgreementStatus.ACTIVE)
 
 
 async def test_mora_not_capitalized(client: httpx.AsyncClient, db):
     """Mes 2 se calcula sobre capital 100, no sobre 103 (#F05-20 crítico)."""
     from app.database.session import AsyncSessionLocal
     from app.modules.credits.application.service import apply_mora_for_period
-    from app.modules.credits.domain.models import CreditMora
+    from app.modules.credits.domain.models import CreditInstallment, CreditMora
 
     async with AsyncSessionLocal() as session:
         async with session.begin():
             _, inst = await _overdue_setup(session, principal="100.00")
-
+            # vencida ANTES del inicio del período anterior para que ambos
+            # períodos (-1 y 0) le apliquen mora
+            inst.due_date = date.today() - timedelta(days=70)
+            inst_id = inst.id
     async with AsyncSessionLocal() as session:
         r1 = await apply_mora_for_period(session, period=_period_offset(-1))
     async with AsyncSessionLocal() as session:
         r2 = await apply_mora_for_period(session, period=_period_offset(0))
 
     _ = r1, r2
-    await db.refresh(inst)
+    inst = await db.get(CreditInstallment, inst_id)
     assert Decimal(inst.mora_amount) == Decimal("6.00"), "3% sobre 100 dos veces, nunca sobre 103"
 
     moras = (
@@ -918,7 +930,7 @@ async def test_mora_uses_decimal_not_float(client: httpx.AsyncClient, db):
 
     from app.modules.credits.application.service import money
 
-    computed = Decimal("100") * Decimal(str(0.03)) * Decimal("12") * Decimal("7")
+    computed = Decimal("100") * Decimal(str(0.03)) * Decimal("28")
     result = money(computed)
     assert isinstance(result, Decimal)
     assert result == (computed.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
@@ -929,18 +941,19 @@ async def test_mora_does_not_apply_to_current_period(client: httpx.AsyncClient, 
     """Cuota que vence DENTRO del período actual no recibe mora."""
     from app.database.session import AsyncSessionLocal
     from app.modules.credits.application.service import apply_mora_for_period
-    from app.modules.credits.domain.models import InstallmentStatus
+    from app.modules.credits.domain.models import CreditInstallment, InstallmentStatus
 
     async with AsyncSessionLocal() as session:
         async with session.begin():
             _, future_inst = await _overdue_setup(session, principal="200.00")
             future_inst.due_date = date.today() + timedelta(days=5)  # dentro del período actual
+            inst_id = future_inst.id
 
     async with AsyncSessionLocal() as session:
         result = await apply_mora_for_period(session, period=_period_offset(0))
 
     assert result["processed_installments"] == 0
-    await db.refresh(future_inst)
+    future_inst = await db.get(CreditInstallment, inst_id)
     assert Decimal(future_inst.mora_amount) == Decimal("0")
     assert future_inst.status == InstallmentStatus.PENDING
 
@@ -1182,10 +1195,10 @@ async def test_delivered_on_credit_not_available_for_sale(client: httpx.AsyncCli
         serialized_unit_id=unit.id,
     )
 
+    # los servicios del módulo gestionan su propio commit (sin begin() externo)
     async with AsyncSessionLocal() as session:
-        async with session.begin():
-            owner = await _get_owner(session)
-            await deliver_on_credit(session, agreement_id=agreement.id, user=owner)
+        owner = await _get_owner(session)
+        await deliver_on_credit(session, agreement_id=agreement.id, user=owner)
 
     await db.refresh(unit)
     assert unit.status != "AVAILABLE"
