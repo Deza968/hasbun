@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Any
 
 from app.core.dependencies import DbSession, require_permission
 from app.core.exceptions import NotFoundError
@@ -83,11 +83,11 @@ async def get_kardex(
         page=page,
         per_page=per_page,
     )
-    items = data["items"]
+    items: list[Any] = list(data["items"])  # type: ignore[call-overload]
     balance = Decimal("0")
     movements: list[MovementResponse] = []
     for m in items:
-        if m.movement_type in MovementType.PHYSICAL_IN | MovementType.PHYSICAL_OUT:
+        if m.movement_type in (MovementType.PHYSICAL_IN | MovementType.PHYSICAL_OUT):
             balance += m.quantity
         movements.append(MovementResponse.from_model(m, balance))
     return KardexResponse(

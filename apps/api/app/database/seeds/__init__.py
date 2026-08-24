@@ -13,22 +13,27 @@ import app.modules.customers.domain.models  # noqa: F401
 import app.modules.exchange_rates.domain.models  # noqa: F401
 import app.modules.files.domain.models  # noqa: F401
 import app.modules.inventory.domain.models  # noqa: F401
+import app.modules.notifications.domain.models  # noqa: F401
 import app.modules.permissions.domain.models  # noqa: F401
 import app.modules.products.domain.models  # noqa: F401
 import app.modules.purchases.domain.models  # noqa: F401
+import app.modules.quotes.domain.models  # noqa: F401
 import app.modules.roles.domain.models  # noqa: F401
 import app.modules.sales.domain.models  # noqa: F401
 import app.modules.suppliers.domain.models  # noqa: F401
 import app.modules.users.domain.models  # noqa: F401
+import app.modules.whatsapp.domain.models  # noqa: F401
 from app.database.seeds.cash import seed_cash, seed_cash_registers
 from app.database.seeds.catalog import seed_catalog
 from app.database.seeds.credits import seed_credits
 from app.database.seeds.customers import seed_customers
 from app.database.seeds.inventory import seed_inventory
 from app.database.seeds.permissions import seed_permissions
+from app.database.seeds.quotes import seed_quotes
 from app.database.seeds.roles import seed_roles
 from app.database.seeds.sales import seed_sales
 from app.database.seeds.users import seed_users
+from app.database.seeds.whatsapp import seed_whatsapp
 
 __all__ = [
     "seed_roles",
@@ -41,4 +46,6 @@ __all__ = [
     "seed_cash_registers",
     "seed_sales",
     "seed_credits",
+    "seed_quotes",
+    "seed_whatsapp",
 ]

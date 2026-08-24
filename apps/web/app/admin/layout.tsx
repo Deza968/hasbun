@@ -1,6 +1,7 @@
 "use client";
 
 import { RequireAuth } from "@/components/guards";
+import { NotificationsBell } from "@/components/notifications-bell";
 import { Sidebar } from "@/components/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { canAccessSection } from "@/lib/permissions";
@@ -17,11 +18,13 @@ const allItems = [
   { href: "/admin/caja", label: "Caja", section: "caja" },
   { href: "/admin/pos", label: "POS", section: "pos" },
   { href: "/admin/ventas", label: "Ventas", section: "ventas" },
+  { href: "/admin/cotizaciones", label: "Cotizaciones", section: "cotizaciones" },
   { href: "/admin/creditos", label: "Créditos", section: "creditos" },
   { href: "/admin/cuotas", label: "Cuotas", section: "cuotas" },
   { href: "/admin/morosidad", label: "Morosidad", section: "morosidad" },
   { href: "/admin/clientes", label: "Clientes", section: "clientes" },
   { href: "/admin/users", label: "Usuarios", section: "users" },
+  { href: "/admin/whatsapp", label: "WhatsApp", section: "whatsapp" },
   { href: "/profile", label: "Mi perfil", section: "profile" },
 ];
 
@@ -33,8 +36,11 @@ export default function AdminLayout({
 
   return (
     <RequireAuth>
-      <div className="flex min-h-screen">
+      <div className="relative flex min-h-screen">
         <Sidebar title="Panel admin" items={items} />
+        <div className="absolute right-4 top-4 z-40">
+          <NotificationsBell />
+        </div>
         <main className="flex-1 p-6">{children}</main>
       </div>
     </RequireAuth>

@@ -246,7 +246,7 @@ async def _vigent_price(product: Product) -> Decimal:
     return price
 
 
-async def create_credit_sale(db: AsyncSession, *, data, user) -> CreditAgreement:
+async def create_credit_sale(db: AsyncSession, *, data, user, commit: bool = True) -> CreditAgreement:
     """Operación ATÓMICA: venta a crédito + cuotas + reservas + caja (#F05-05).
 
     Cualquier fallo lanza excepción y el llamador (get_db / test) hace rollback.
@@ -308,7 +308,12 @@ async def create_credit_sale(db: AsyncSession, *, data, user) -> CreditAgreement
         summary = await get_stock_summary(db, product.id)
         if summary.available < item.quantity:
             raise BusinessRuleError(f"Stock insuficiente {product.sku}: disponible {summary.available}")
-        unit_price = await _vigent_price(product)
+        unit_price_override = getattr(item, "unit_price", None)
+        unit_price = (
+            Decimal(str(unit_price_override))
+            if unit_price_override is not None
+            else await _vigent_price(product)
+        )
         sub = money(unit_price * item.quantity)
         total += sub
         db.add(
@@ -430,6 +435,10 @@ async def create_credit_sale(db: AsyncSession, *, data, user) -> CreditAgreement
                     )
                 )
 
+    if not commit:
+        # conversión de cotización: el llamador hace el commit único (#F06-03)
+        return await repository.get_agreement(db, agreement.id)  # type: ignore[return-value]
+
     await db.commit()
     await _audit(
         action="CREATE_CREDIT",
@@ -451,6 +460,23 @@ async def create_credit_sale(db: AsyncSession, *, data, user) -> CreditAgreement
             "first_due_date": agreement.first_due_date.isoformat(),
         },
     )
+    # Tras el commit: notificación interna al OWNER (#F06-14 / §24.2)
+    try:
+        from app.modules.notifications.application.service import notify_roles
+
+        await notify_roles(
+            db,
+            role_codes=["OWNER"],
+            type_="new_credit",
+            title="Nuevo crédito creado",
+            message=f"Crédito {agreement.code} por {agreement.currency} {agreement.total_amount}",
+            priority="MEDIUM",
+            related_type="credit",
+            related_id=agreement.id,
+        )
+        await db.commit()
+    except Exception:  # noqa: BLE001
+        logger.exception("Fallo notificando nuevo crédito %s", agreement.code)
     return await repository.get_agreement(db, agreement.id)  # type: ignore[return-value]
 
 
@@ -569,7 +595,56 @@ async def pay_installment(db: AsyncSession, *, installment_id: uuid.UUID, data, 
     )
     if completed:
         await _audit(action="CREDIT_COMPLETED", user_id=user.id, entity=agreement, new_values={"code": agreement.code})
+    # Tras el commit: WhatsApp PAYMENT_RECEIVED / SALE_COMPLETED (#F06-10).
+    try:
+        await _send_credit_whatsapp(
+            db,
+            agreement=agreement,
+            installment=installment,
+            amount=amount,
+            completed=completed,
+        )
+    except Exception:  # noqa: BLE001 — notificación jamás rompe el pago
+        logger.exception("Fallo encolando WhatsApp para pago de cuota %s", installment.id)
     return payment
+
+
+async def _send_credit_whatsapp(
+    db: AsyncSession, *, agreement: CreditAgreement, installment: CreditInstallment, amount: Decimal, completed: bool
+) -> None:
+    """Encola eventos WhatsApp tras pagar una cuota (siempre post-commit)."""
+    from app.modules.whatsapp.application.service import send_event
+
+    customer = await db.get(Customer, agreement.customer_id)
+    recipient = (customer.phone_whatsapp or customer.phone) if customer else None
+    name = (
+        customer.razon_social
+        or " ".join(filter(None, [customer.first_name or "", customer.last_name or ""]))
+        or None
+    ) if customer else None
+    base_vars = {
+        "customer_name": name,
+        "credit_code": agreement.code,
+        "installment_number": installment.number,
+        "amount": f"{amount}",
+        "total": str(agreement.total_amount),
+    }
+    await send_event(
+        db,
+        event_type="PAYMENT_RECEIVED",
+        recipient=recipient,
+        variables={**base_vars, "amount": f"{amount}"},
+        idempotency_key=f"payment-received:{installment.id}:{installment.paid_amount}",
+    )
+    if completed:
+        await send_event(
+            db,
+            event_type="SALE_COMPLETED",
+            recipient=recipient,
+            variables=base_vars,
+            idempotency_key=f"sale-completed:{agreement.id}",
+        )
+    await db.commit()
 
 
 async def _finalize_if_completed(db: AsyncSession, *, agreement: CreditAgreement, user_id: uuid.UUID) -> bool:
@@ -811,7 +886,87 @@ async def apply_mora_for_period(
         "defaulted_agreements": defaulted,
     }
     logger.info("Mora aplicada: %s", result)
+    # Tras el commit: WhatsApp MORA_CREATED/INSTALLMENT_OVERDUE + notificaciones (#F06-10).
+    try:
+        await _notify_mora_events(db, period=period, overdue_rows=list(overdue_rows), result=result)
+    except Exception:  # noqa: BLE001 — notificación jamás rompe la mora
+        logger.exception("Fallo encolando WhatsApp/notificaciones de mora %s", period)
     return result
+
+
+async def _notify_mora_events(
+    db: AsyncSession, *, period: str, overdue_rows: list[CreditInstallment], result: dict[str, Any]
+) -> None:
+    """Post-commit de apply_mora_for_period: eventos por cuota + resumen interno."""
+    if not overdue_rows:
+        return
+    from app.modules.whatsapp.application.service import send_event
+
+    agreement_ids = {i.agreement_id for i in overdue_rows}
+    agreements = {
+        a.id: a
+        for a in (
+            await db.execute(select(CreditAgreement).where(CreditAgreement.id.in_(agreement_ids)))
+        ).scalars().all()
+    }
+    customers = {
+        c.id: c
+        for c in (
+            await db.execute(
+                select(Customer).where(Customer.id.in_({a.customer_id for a in agreements.values()}))
+            )
+        ).scalars().all()
+    } if agreements else {}
+
+    for inst in overdue_rows:
+        agreement = agreements.get(inst.agreement_id)
+        customer = customers.get(agreement.customer_id) if agreement else None
+        recipient = (customer.phone_whatsapp or customer.phone) if customer else None
+        name = (
+            customer.razon_social
+            or " ".join(filter(None, [customer.first_name or "", customer.last_name or ""]))
+            or None
+        ) if customer else None
+        vars_ = {
+            "customer_name": name,
+            "credit_code": agreement.code if agreement else "",
+            "installment_number": inst.number,
+            "amount": f"{inst.remaining_amount}",
+            "mora_amount": f"{inst.mora_amount}",
+            "period": period,
+        }
+        await send_event(
+            db,
+            event_type="MORA_CREATED",
+            recipient=recipient,
+            variables=vars_,
+            idempotency_key=f"mora-created:{inst.id}:{period}",
+        )
+        await send_event(
+            db,
+            event_type="INSTALLMENT_OVERDUE",
+            recipient=recipient,
+            variables=vars_,
+            idempotency_key=f"installment-overdue:{inst.id}:{period}",
+        )
+    await db.commit()
+
+    from app.modules.notifications.application.service import notify_roles
+
+    await notify_roles(
+        db,
+        role_codes=["OWNER", "SALES"],
+        type_="installment_overdue",
+        title="Cuotas vencidas",
+        message=(
+            f"Período {period}: {result['processed_installments']} cuota(s) con mora aplicada "
+            f"por {result['mora_total']}"
+        ),
+        priority="HIGH",
+        related_type="credit_mora",
+        related_id=None,
+    )
+    await db.commit()
 
 
 # ---------------------------------------------------------------------------

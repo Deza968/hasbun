@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { RequireAuth } from "@/components/guards";
 import { Sidebar } from "@/components/sidebar";
@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/sidebar";
 const items = [
   { href: "/customer", label: "Panel" },
   { href: "/customer/cuotas", label: "Mis cuotas" },
+  { href: "/customer/cotizaciones", label: "Mis cotizaciones" },
   { href: "/profile", label: "Mi perfil" },
 ];
 

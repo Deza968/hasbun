@@ -320,6 +320,20 @@ async def request_close_session(
     await db.commit()
     await db.refresh(session)
     await db.refresh(closure)
+    try:
+        from app.modules.notifications.application.service import notify_roles
+
+        await notify_roles(
+            db,
+            role_codes=["OWNER"],
+            type_="cash_closure_request",
+            title="Cierre de caja con diferencia",
+            message=f"Sesión de caja {session.id} cierra con diferencia S/ {diff} (esperado S/ {expected}, contado S/ {counted})",
+            priority="URGENT", related_type="CashClosureRequest", related_id=closure.id,
+        )
+        await db.commit()
+    except Exception:  # noqa: BLE001 — la notificación nunca rompe el flujo
+        await db.rollback()
     await log(
         action="REQUEST_CASH_CLOSURE",
         module="cash",

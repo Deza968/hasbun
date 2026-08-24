@@ -384,3 +384,103 @@ export interface CustomerOptionList {
   items: CustomerOption[];
   total: number;
 }
+export interface QuoteItem {
+  id: string;
+  product_id: string;
+  product_name: string | null;
+  product_sku: string | null;
+  quantity: string;
+  unit_price: string;
+  discount_amount: string;
+  subtotal: string;
+  notes: string | null;
+}
+
+export interface Quote {
+  id: string;
+  code: string;
+  customer_id: string;
+  customer_name: string | null;
+  status: string;
+  subtotal: string;
+  discount_amount: string;
+  total: string;
+  currency: string;
+  valid_until: string;
+  notes: string | null;
+  sent_via_whatsapp: boolean;
+  viewed_at: string | null;
+  responded_at: string | null;
+  converted_to_sale_id: string | null;
+  created_by: string | null;
+  created_at: string;
+  items: QuoteItem[];
+}
+
+export interface QuoteSummary {
+  id: string;
+  code: string;
+  customer_id: string;
+  customer_name?: string | null;
+  status: string;
+  total: string;
+  currency: string;
+  valid_until: string;
+  sent_via_whatsapp: boolean;
+  created_at: string;
+}
+
+export interface QuoteList {
+  items: QuoteSummary[];
+  total: number;
+}
+
+export interface WhatsAppMessage {
+  id: string;
+  recipient: string;
+  event_type: string;
+  template_name: string;
+  rendered: string;
+  status: string;
+  retry_count: number;
+  error: string | null;
+  provider_message_id: string | null;
+  sent_at: string | null;
+  created_at: string;
+}
+
+export interface WhatsAppMessageList {
+  items: WhatsAppMessage[];
+  total: number;
+}
+
+export interface WhatsAppTemplate {
+  id: string;
+  name: string;
+  event_type: string;
+  body: string;
+  variables: string[];
+  active: boolean;
+}
+
+export interface WhatsAppConfig {
+  enabled: boolean;
+  provider: string;
+}
+
+export interface AppNotification {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  read: boolean;
+  priority: string;
+  related_type: string | null;
+  related_id: string | null;
+  created_at: string;
+}
+
+export interface NotificationList {
+  items: AppNotification[];
+  total: number;
+}

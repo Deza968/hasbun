@@ -25,6 +25,7 @@ os.environ.setdefault(
     "postgresql+asyncpg://hasbun:hasbun@localhost:5433/hasbun_test",
 )
 os.environ.setdefault("REDIS_URL", "redis://localhost:6380/15")
+os.environ.setdefault("CELERY_ENQUEUE_ENABLED", "false")  # sin broker en tests
 
 from app.database.base import Base  # noqa: E402
 from app.database.seeds import (  # noqa: E402

@@ -48,6 +48,8 @@ PERMISSIONS: list[tuple[str, str, str]] = [
     ("clientes.gestionar", "Gestionar clientes", "clientes"),
     ("cotizaciones.crear", "Crear cotizaciones", "cotizaciones"),
     ("cotizaciones.aprobar", "Aprobar cotizaciones", "cotizaciones"),
+    ("cotizaciones.ver", "Ver cotizaciones", "cotizaciones"),
+    ("whatsapp.gestionar", "Gestionar panel de WhatsApp", "whatsapp"),
     ("pedidos.gestionar", "Gestionar pedidos", "ventas"),
     # Créditos y cuotas
     ("creditos.aprobar", "Aprobar créditos", "creditos"),
@@ -85,6 +87,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "clientes.gestionar",
         "productos.ver",
         "cotizaciones.crear",
+        "cotizaciones.ver",
         "pedidos.gestionar",
         "creditos.ver",
         "reportes.propios",

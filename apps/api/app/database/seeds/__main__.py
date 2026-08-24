@@ -12,9 +12,11 @@ from app.database.seeds import (
     seed_customers,
     seed_inventory,
     seed_permissions,
+    seed_quotes,
     seed_roles,
     seed_sales,
     seed_users,
+    seed_whatsapp,
 )
 from app.database.session import AsyncSessionLocal, engine
 from app.modules.attributes.domain import models as attributes_models  # noqa: F401
@@ -26,13 +28,16 @@ from app.modules.customers.domain import models as customers_models  # noqa: F40
 from app.modules.exchange_rates.domain import models as exchange_rates_models  # noqa: F401
 from app.modules.files.domain import models as files_models  # noqa: F401
 from app.modules.inventory.domain import models as inventory_models  # noqa: F401
+from app.modules.notifications.domain import models as notifications_models  # noqa: F401
 from app.modules.permissions.domain import models as permissions_models  # noqa: F401
 from app.modules.products.domain import models as products_models  # noqa: F401
 from app.modules.purchases.domain import models as purchases_models  # noqa: F401
+from app.modules.quotes.domain import models as quotes_models  # noqa: F401
 from app.modules.roles.domain import models as roles_models  # noqa: F401
 from app.modules.sales.domain import models as sales_models  # noqa: F401
 from app.modules.suppliers.domain import models as suppliers_models  # noqa: F401
 from app.modules.users.domain import models as users_models  # noqa: F401
+from app.modules.whatsapp.domain import models as whatsapp_models  # noqa: F401
 
 
 async def main() -> None:
@@ -48,6 +53,8 @@ async def main() -> None:
         print(await seed_cash_registers(db))
         print(await seed_sales(db))
         print(await seed_credits(db))
+        print(await seed_quotes(db))
+        print(await seed_whatsapp(db))
     await engine.dispose()
 
 

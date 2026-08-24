@@ -11,6 +11,8 @@ const SECTION_PERMISSIONS: Record<string, string[]> = {
   proveedores: ["proveedores.gestionar"],
   compras: ["compras.ver"],
   creditos: ["creditos.ver"],
+  cotizaciones: ["cotizaciones.ver"],
+  whatsapp: ["whatsapp.gestionar"],
   cuotas: ["cuotas.gestionar"],
   morosidad: ["creditos.aprobar"],
 };

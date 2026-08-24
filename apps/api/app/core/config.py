@@ -97,6 +97,7 @@ class Settings(BaseSettings):
     # Celery
     CELERY_BROKER_URL: str = "redis://localhost:6379/1"
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
+    CELERY_ENQUEUE_ENABLED: bool = True  # False en tests: mensajes quedan PENDING
 
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod

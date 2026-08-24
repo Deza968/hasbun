@@ -32,6 +32,20 @@ async def request_discount(db: AsyncSession, *, data, requested_by):
     await db.commit()
     await db.refresh(auth)
     await log(action="REQUEST_DISCOUNT", module="sales", user_id=requested_by.id, entity_type="DiscountAuthorization", entity_id=auth.id, new_values={"type": auth.type})
+    try:
+        from app.modules.notifications.application.service import notify_roles
+
+        await notify_roles(
+            db,
+            role_codes=["OWNER"],
+            type_="discount_request",
+            title="Solicitud de descuento",
+            message=f"{requested_by.email} solicita descuento {auth.type} para venta {data.sale_id}",
+            priority="HIGH", related_type="DiscountAuthorization", related_id=auth.id,
+        )
+        await db.commit()
+    except Exception:  # noqa: BLE001 — la notificación nunca rompe el flujo
+        await db.rollback()
     return auth
 
 
@@ -44,6 +58,18 @@ async def approve_discount(db: AsyncSession, *, auth_id: uuid.UUID, approved_by)
     auth.reviewed_at = datetime.now(UTC)
     await db.commit()
     await log(action="APPROVE_DISCOUNT", module="sales", user_id=approved_by.id, entity_type="DiscountAuthorization", entity_id=auth.id, new_values={"approved_by": str(approved_by.id)})
+    try:
+        from app.modules.notifications.application.service import create_notification
+
+        await create_notification(
+            db, user_id=auth.requested_by, type_="discount_approved",
+            title="Descuento aprobado",
+            message=f"Tu solicitud de descuento fue APROBADA por {approved_by.email}",
+            priority="MEDIUM", related_type="DiscountAuthorization", related_id=auth.id,
+        )
+        await db.commit()
+    except Exception:  # noqa: BLE001 — la notificación nunca rompe el flujo
+        await db.rollback()
     return auth
 
 
@@ -56,10 +82,22 @@ async def reject_discount(db: AsyncSession, *, auth_id: uuid.UUID, rejected_by):
     auth.reviewed_at = datetime.now(UTC)
     await db.commit()
     await log(action="REJECT_DISCOUNT", module="sales", user_id=rejected_by.id, entity_type="DiscountAuthorization", entity_id=auth.id, new_values={})
+    try:
+        from app.modules.notifications.application.service import create_notification
+
+        await create_notification(
+            db, user_id=auth.requested_by, type_="discount_rejected",
+            title="Descuento rechazado",
+            message=f"Tu solicitud de descuento fue RECHAZADA por {rejected_by.email}",
+            priority="MEDIUM", related_type="DiscountAuthorization", related_id=auth.id,
+        )
+        await db.commit()
+    except Exception:  # noqa: BLE001 — la notificación nunca rompe el flujo
+        await db.rollback()
     return auth
 
 
-async def create_cash_sale(db: AsyncSession, *, data, user):
+async def create_cash_sale(db: AsyncSession, *, data, user, commit: bool = True):
     # idempotencia
     if data.idempotency_key:
         existing = await get_by_idempotency(db, data.idempotency_key)
@@ -123,14 +161,19 @@ async def create_cash_sale(db: AsyncSession, *, data, user):
             if not unit or unit.status != "AVAILABLE" or unit.product_id != product.id:
                 raise BusinessRuleError("Serial no disponible")
             unit.status = "SOLD"
-        # precio vigente (get_current_price simplificado: sale_price)
-        unit_price = product.sale_price
-        # oferta activa?
-        now = datetime.now(UTC)
-        for o in product.offers:
-            if o.active and o.start_at <= now <= o.end_at:
-                unit_price = o.offer_price
-                break
+        # precio: override congelado (conversión de cotización) o precio vigente
+        unit_price_override = getattr(item, "unit_price", None)
+        if unit_price_override is not None:
+            unit_price = Decimal(str(unit_price_override))
+        else:
+            # precio vigente (get_current_price simplificado: sale_price)
+            unit_price = product.sale_price
+            # oferta activa?
+            now = datetime.now(UTC)
+            for o in product.offers:
+                if o.active and o.start_at <= now <= o.end_at:
+                    unit_price = o.offer_price
+                    break
         item_sub = (unit_price * item.quantity - item.discount_amount).quantize(Decimal("0.01"))
         subtotal += item_sub
         sale_item = SaleItem(
@@ -145,12 +188,13 @@ async def create_cash_sale(db: AsyncSession, *, data, user):
     # descuento global
     if data.discount_authorization_id:
         auth = await db.get(DiscountAuthorization, data.discount_authorization_id)
-        if auth.type == "PERCENTAGE":
-            discount_amount = (subtotal * auth.percentage).quantize(Decimal("0.01"))
-        else:
-            discount_amount = auth.fixed_amount or Decimal("0")
-        if discount_amount > subtotal:
-            raise ValidationError("Descuento mayor al subtotal")
+        if auth is not None:
+            if auth.type == "PERCENTAGE":
+                discount_amount = (subtotal * (auth.percentage or Decimal("0"))).quantize(Decimal("0.01"))
+            else:
+                discount_amount = auth.fixed_amount or Decimal("0")
+            if discount_amount > subtotal:
+                raise ValidationError("Descuento mayor al subtotal")
 
     sale.subtotal = subtotal.quantize(Decimal("0.01"))
     sale.discount_amount = discount_amount.quantize(Decimal("0.01"))
@@ -174,10 +218,87 @@ async def create_cash_sale(db: AsyncSession, *, data, user):
     from app.modules.cash.domain.models import CashMovement
     db.add(CashMovement(session_id=cash_session.id, type="SALE_INCOME", amount=sale.total, direction="IN", reference_type="sale", reference_id=sale.id, created_by=user.id, idempotency_key=data.idempotency_key))
 
+    if not commit:
+        # conversión de cotización: el llamador hace el commit único (#F06-03)
+        return sale
+
     await db.commit()
-    sale = await db.get(Sale, sale.id)
+    fresh_sale = await db.get(Sale, sale.id)
+    sale = fresh_sale if fresh_sale is not None else sale
     await log(action="CREATE_SALE", module="sales", user_id=user.id, entity_type="Sale", entity_id=sale.id, new_values={"code": sale.code, "total": str(sale.total)})
+    # Tras el commit: WhatsApp NEW_SALE + notificaciones internas (#F06-10).
+    # Nunca bloquea el flujo: los fallos solo se loguean.
+    try:
+        await notify_new_sale(sale.id)
+    except Exception:  # noqa: BLE001
+        import logging
+
+        logging.getLogger("hasbun.sales").exception("Fallo notificación NEW_SALE venta %s", sale.code)
     return sale
+
+
+async def notify_new_sale(sale_id: uuid.UUID) -> None:
+    """Encola WhatsApp NEW_SALE al cliente + notificación interna OWNER/SALES.
+
+    Se ejecuta SIEMPRE después del commit de la venta (REQUIREMENTS §23.4).
+    Usa sesiones propias para no tocar la transacción original.
+    """
+    from app.database.session import AsyncSessionLocal
+    from app.modules.customers.domain.models import Customer
+    from app.modules.notifications.application.service import notify_roles
+    from app.modules.sales.domain.models import SaleItem
+    from app.modules.whatsapp.application.service import send_event
+    from sqlalchemy.orm import selectinload
+
+    async with AsyncSessionLocal() as db:
+        sale = (
+            await db.execute(
+                select(Sale)
+                .where(Sale.id == sale_id)
+                .options(selectinload(Sale.items).selectinload(SaleItem.product))
+            )
+        ).scalar_one_or_none()
+        if sale is None:
+            return
+        customer = await db.get(Customer, sale.customer_id)
+        recipient = (customer.phone_whatsapp or customer.phone) if customer else None
+        name = (
+            customer.razon_social
+            or " ".join(filter(None, [customer.first_name or "", customer.last_name or ""]))
+            or None
+        ) if customer else None
+        product_list = ", ".join(
+            (item.product.name if item.product else "producto") for item in sale.items
+        )
+        await send_event(
+            db,
+            event_type="NEW_SALE",
+            recipient=recipient,
+            variables={
+                "customer_name": name,
+                "sale_code": sale.code,
+                "total": str(sale.total),
+                "product_list": product_list,
+            },
+            idempotency_key=f"new-sale:{sale.id}",
+        )
+        await db.commit()
+
+    async with AsyncSessionLocal() as ndb:
+        sale2 = await ndb.get(Sale, sale_id)
+        if sale2 is None:
+            return
+        await notify_roles(
+            ndb,
+            role_codes=["OWNER", "SALES"],
+            type_="new_sale",
+            title="Nueva venta",
+            message=f"Venta {sale2.code} registrada por {sale2.currency} {sale2.total}",
+            priority="LOW",
+            related_type="sale",
+            related_id=sale2.id,
+        )
+        await ndb.commit()
 
 
 async def cancel_sale(db: AsyncSession, *, sale_id: uuid.UUID, reason: str, user):

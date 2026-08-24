@@ -1,6 +1,6 @@
-"""Servicio de compras: creación, confirmación y recepción (#F03-09).
+﻿"""Servicio de compras: creaciÃ³n, confirmaciÃ³n y recepciÃ³n (#F03-09).
 
-La recepción de una compra es una operación ATÓMICA que genera los
+La recepciÃ³n de una compra es una operaciÃ³n ATÃ“MICA que genera los
 movimientos de inventario (PURCHASE, +qty) y actualiza seriales.
 """
 
@@ -46,9 +46,9 @@ async def create_purchase(
     if supplier is None:
         raise NotFoundError("Proveedor no encontrado")
     if not supplier.active:
-        raise ValidationError("El proveedor está inactivo")
+        raise ValidationError("El proveedor estÃ¡ inactivo")
     if not data.items:
-        raise ValidationError("La compra debe tener al menos un ítem")
+        raise ValidationError("La compra debe tener al menos un Ã­tem")
 
     for item in data.items:
         product = await db.get(Product, item.product_id)
@@ -75,7 +75,7 @@ async def create_purchase(
         if product is None:
             raise NotFoundError("Producto no encontrado")
         price = item.unit_cost
-        # Si la compra es en USD y el producto está en PEN, el costo se
+        # Si la compra es en USD y el producto estÃ¡ en PEN, el costo se
         # almacena en la moneda del producto (regla de negocio simple).
         if data.currency == "USD" and product.currency == "PEN":
             price = (item.unit_cost * data.exchange_rate).quantize(Decimal("0.01"))
@@ -88,13 +88,14 @@ async def create_purchase(
             received_quantity=Decimal("0"),
             notes=item.notes,
         )
-        purchase_item.product = product  # puebla la relación para la respuesta
+        purchase_item.product = product  # puebla la relaciÃ³n para la respuesta
         db.add(purchase_item)
         items.append(purchase_item)
 
     purchase.total = await _compute_total(items)
     await db.commit()
-    purchase = await repository.get_by_id(db, purchase.id)
+    fresh_purchase = await repository.get_by_id(db, purchase.id)
+    purchase = fresh_purchase if fresh_purchase is not None else purchase
     await log(
         action="CREATE_PURCHASE",
         module="purchases",
@@ -149,7 +150,8 @@ async def update_purchase(
         purchase.total = await _compute_total(items)
 
     await db.commit()
-    purchase = await repository.get_by_id(db, purchase.id)
+    fresh_purchase = await repository.get_by_id(db, purchase.id)
+    purchase = fresh_purchase if fresh_purchase is not None else purchase
     await log(
         action="UPDATE_PURCHASE",
         module="purchases",
@@ -169,7 +171,8 @@ async def confirm_order(db: AsyncSession, *, purchase_id: uuid.UUID, user: User)
         raise BusinessRuleError("Solo se puede confirmar un borrador")
     purchase.status = PurchaseStatus.ORDERED
     await db.commit()
-    purchase = await repository.get_by_id(db, purchase.id)
+    fresh_purchase = await repository.get_by_id(db, purchase.id)
+    purchase = fresh_purchase if fresh_purchase is not None else purchase
     await log(
         action="CONFIRM_PURCHASE",
         module="purchases",
@@ -184,9 +187,9 @@ async def confirm_order(db: AsyncSession, *, purchase_id: uuid.UUID, user: User)
 async def receive_purchase(
     db: AsyncSession, *, purchase_id: uuid.UUID, received_items: list[dict], user: User
 ) -> Purchase:
-    """Recepción atómica de compra: actualiza ítems y genera movimientos.
+    """RecepciÃ³n atÃ³mica de compra: actualiza Ã­tems y genera movimientos.
 
-    [TRANSACCIÓN]: si algo falla, el rollback deshace movimientos e ítems.
+    [TRANSACCIÃ“N]: si algo falla, el rollback deshace movimientos e Ã­tems.
     """
     purchase = await repository.get_by_id(db, purchase_id)
     if purchase is None:
@@ -201,20 +204,20 @@ async def receive_purchase(
     for item in purchase.items:
         if item.id not in received_map:
             raise ValidationError(
-                f"Debe indicar la cantidad recibida para el ítem {item.id}"
+                f"Debe indicar la cantidad recibida para el Ã­tem {item.id}"
             )
         qty = received_map[item.id]
         if qty < 0 or qty > item.quantity:
             raise ValidationError(
-                f"Cantidad recibida inválida para el producto "
-                f"{item.product.name}: máx {item.quantity}"
+                f"Cantidad recibida invÃ¡lida para el producto "
+                f"{item.product.name}: mÃ¡x {item.quantity}"
             )
         item.received_quantity = qty
         total_received += (qty * item.unit_cost).quantize(Decimal("0.01"))
         if qty < item.quantity:
             all_received = False
         if qty > 0:
-            # Movimiento de inventario PURCHASE (+qty) — mismo transaction.
+            # Movimiento de inventario PURCHASE (+qty) â€” mismo transaction.
             await register_purchase(
                 db,
                 product_id=item.product_id,
@@ -241,7 +244,7 @@ async def receive_purchase(
                     if serials_input and i < len(serials_input):
                         serial = serials_input[i]
                     else:
-                        # Generación determinística: SKU + timestamp corto
+                        # GeneraciÃ³n determinÃ­stica: SKU + timestamp corto
                         serial = f"{product.sku}-SER-{purchase.code}-{i+1:03d}"
                     db.add(
                         SerializedUnit(
@@ -263,7 +266,8 @@ async def receive_purchase(
                 product.cost_price = item.unit_cost
 
     await db.commit()
-    purchase = await repository.get_by_id(db, purchase.id)
+    fresh_purchase = await repository.get_by_id(db, purchase.id)
+    purchase = fresh_purchase if fresh_purchase is not None else purchase
     await log(
         action="RECEIVE_PURCHASE",
         module="purchases",
@@ -288,10 +292,11 @@ async def cancel_purchase(
     if purchase.status == PurchaseStatus.RECEIVED:
         raise ConflictError("No se puede cancelar una compra ya recibida")
     if purchase.status == PurchaseStatus.CANCELLED:
-        raise ValidationError("La compra ya está cancelada")
+        raise ValidationError("La compra ya estÃ¡ cancelada")
     purchase.status = PurchaseStatus.CANCELLED
     await db.commit()
-    purchase = await repository.get_by_id(db, purchase.id)
+    fresh_purchase = await repository.get_by_id(db, purchase.id)
+    purchase = fresh_purchase if fresh_purchase is not None else purchase
     await log(
         action="CANCEL_PURCHASE",
         module="purchases",
@@ -316,7 +321,8 @@ async def upload_invoice(
         raise NotFoundError("Archivo no encontrado")
     purchase.invoice_file_id = file_id
     await db.commit()
-    purchase = await repository.get_by_id(db, purchase.id)
+    fresh_purchase = await repository.get_by_id(db, purchase.id)
+    purchase = fresh_purchase if fresh_purchase is not None else purchase
     await log(
         action="UPLOAD_PURCHASE_INVOICE",
         module="purchases",

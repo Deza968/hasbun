@@ -20,6 +20,9 @@ celery_app = Celery(
         "worker.tasks.exchange_rates",
         "worker.tasks.inventory",
         "worker.tasks.mora",
+        "worker.tasks.whatsapp",
+        "worker.tasks.quotes",
+        "worker.tasks.credits",
     ],
 )
 
@@ -60,6 +63,21 @@ celery_app.conf.update(
         "apply-mora-daily": {
             "task": "worker.tasks.mora.apply_daily_mora",
             "schedule": crontab(minute=0, hour=settings.MORA_APPLY_HOUR),
+        },
+        # #F06-04: expiración de cotizaciones — diaria 7 AM
+        "expire-quotes-daily": {
+            "task": "worker.tasks.quotes.expire_pending_quotes",
+            "schedule": crontab(minute=0, hour=7),
+        },
+        # #F06-11: recordatorios de cuotas próximas (hoy + 3 días) — diaria 9 AM
+        "installment-reminders-daily": {
+            "task": "worker.tasks.credits.send_upcoming_installment_reminders",
+            "schedule": crontab(minute=0, hour=9),
+        },
+        # #F06-09: reintento de mensajes WhatsApp PENDING vencidos — cada 15 min
+        "whatsapp-retry-pending": {
+            "task": "worker.tasks.whatsapp.retry_pending_messages",
+            "schedule": crontab(minute="*/15"),
         },
     },
 )

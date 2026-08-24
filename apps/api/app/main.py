@@ -23,13 +23,16 @@ from app.modules.exchange_rates.api.router import router as exchange_rates_route
 from app.modules.files.api.router import router as files_router
 from app.modules.health.api.router import router as health_router
 from app.modules.inventory.api.router import router as inventory_router
+from app.modules.notifications.api.router import router as notifications_router
 from app.modules.permissions.api.router import router as permissions_router
 from app.modules.products.api.router import router as products_router
 from app.modules.purchases.api.router import router as purchases_router
+from app.modules.quotes.api.router import router as quotes_router
 from app.modules.roles.api.router import router as roles_router
 from app.modules.sales.api.router import router as sales_router
 from app.modules.suppliers.api.router import router as suppliers_router
 from app.modules.users.api.router import router as users_router
+from app.modules.whatsapp.api.router import router as whatsapp_router
 
 setup_logging(settings.ENVIRONMENT)
 
@@ -65,3 +68,6 @@ app.include_router(customers_router, prefix="/api/v1")
 app.include_router(cash_router, prefix="/api/v1")
 app.include_router(sales_router, prefix="/api/v1")
 app.include_router(credits_router, prefix="/api/v1")
+app.include_router(quotes_router, prefix="/api/v1")
+app.include_router(whatsapp_router, prefix="/api/v1")
+app.include_router(notifications_router, prefix="/api/v1")
